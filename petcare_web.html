@@ -737,6 +737,275 @@ td { padding:13px 16px; font-size:.875rem; vertical-align:middle; }
 /* overlay close for dropdown */
 #overlay-close { display:none; position:fixed; inset:0; z-index:400; }
 #overlay-close.open { display:block; }
+
+/* ═══════════════════════════════════════════
+   HAMBURGER / MOBILE MENU
+═══════════════════════════════════════════ */
+.hamburger {
+  display:none; flex-direction:column; justify-content:center;
+  gap:5px; width:38px; height:38px; padding:6px;
+  background:none; border:none; cursor:pointer; border-radius:var(--r-sm);
+  transition:background .15s; flex-shrink:0;
+}
+.hamburger:hover { background:var(--p-light); }
+.hamburger span {
+  display:block; height:2px; background:var(--text);
+  border-radius:2px; transition:all .3s;
+}
+.hamburger.open span:nth-child(1) { transform:rotate(45deg) translate(5px,5px); }
+.hamburger.open span:nth-child(2) { opacity:0; transform:scaleX(0); }
+.hamburger.open span:nth-child(3) { transform:rotate(-45deg) translate(5px,-5px); }
+
+.mobile-menu {
+  display:none; position:fixed; top:0; left:0; right:0; bottom:0;
+  background:#fff; z-index:600; overflow-y:auto;
+  flex-direction:column; padding:0;
+  transform:translateX(-100%); transition:transform .3s ease;
+}
+.mobile-menu.open { transform:translateX(0); }
+.mobile-menu-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px; border-bottom:1px solid var(--border);
+  position:sticky; top:0; background:#fff; z-index:1;
+}
+.mobile-menu-close {
+  width:36px; height:36px; border-radius:50%; border:1.5px solid var(--border);
+  background:none; cursor:pointer; font-size:1.1rem; color:var(--muted);
+  display:flex; align-items:center; justify-content:center;
+}
+.mobile-nav-item {
+  display:flex; align-items:center; gap:12px;
+  padding:15px 20px; font-size:.95rem; font-weight:600;
+  color:var(--text); border-bottom:1px solid var(--border);
+  cursor:pointer; transition:background .15s;
+  background:none; border-left:none; border-right:none; border-top:none;
+  width:100%; text-align:left;
+}
+.mobile-nav-item:hover { background:var(--p-light); color:var(--p); }
+.mobile-nav-item.promo { color:var(--red); }
+.mobile-nav-item svg  { width:20px; flex-shrink:0; }
+.mobile-nav-section {
+  padding:10px 20px 6px; font-size:.7rem; font-weight:800;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+  background:var(--bg);
+}
+.mobile-nav-item.admin-item { color:var(--p); }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE – TABLET (≤1024px)
+═══════════════════════════════════════════ */
+@media (max-width:1024px) {
+  .nav-top { padding:0 20px; gap:12px; }
+  .nav-bottom { padding:0 20px; }
+  .products-grid { grid-template-columns:repeat(3,1fr); }
+  .cats-grid { grid-template-columns:repeat(3,1fr); }
+  .features-strip { grid-template-columns:repeat(2,1fr); }
+  .feat-item:nth-child(2) { border-right:1px solid rgba(255,255,255,.2); }
+  .feat-item:nth-child(3) { border-top:1px solid var(--border); }
+  .feat-item:nth-child(4) { border-top:1px solid rgba(255,255,255,.2); border-right:none; }
+  .stat-cards { grid-template-columns:1fr 1fr; }
+  .est-stats  { grid-template-columns:1fr 1fr; }
+  .pets-grid  { grid-template-columns:1fr 1fr; }
+  .svc-cards  { grid-template-columns:1fr 1fr; }
+  #page-cadastrar > div > div[style] { grid-template-columns:1fr !important; }
+  #page-agendar  > div > div[style] { grid-template-columns:1fr !important; }
+  .dash-grid { grid-template-columns:1fr; }
+  .promo-banner { padding:28px 32px; }
+  .promo-banner::before { display:none; }
+  .slide-content { padding:0 52px; gap:28px; }
+  .slide-emoji { font-size:5rem; }
+  .slide-text h2 { font-size:1.5rem; }
+  .slide-text .new-price { font-size:2rem; }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE – MOBILE (≤768px)
+═══════════════════════════════════════════ */
+@media (max-width:768px) {
+  :root { --nav-h:56px; --nav2-h:0px; }
+
+  /* ── Header ── */
+  .nav-top { padding:0 14px; gap:8px; height:var(--nav-h); }
+  .logo-name { font-size:1rem; }
+  .logo-paw  { width:34px; height:34px; border-radius:8px; }
+
+  /* Hide search bar in nav, move it below header */
+  .search-bar { display:none; }
+
+  /* Hide desktop category row */
+  .nav-bottom { display:none; }
+
+  /* Hide desktop admin links + "repetir pedido" btn text */
+  #btn-repetir span,
+  #btn-repetir svg ~ * { display:none; }
+  #btn-repetir { padding:8px; min-width:0; }
+
+  /* Show hamburger */
+  .hamburger { display:flex; }
+
+  /* Show mobile menu overlay */
+  .mobile-menu { display:flex; }
+
+  /* Login dropdown full width */
+  .login-dropdown {
+    position:fixed; top:var(--nav-h); left:0; right:0;
+    width:100%; border-radius:0 0 var(--r) var(--r);
+    max-height:calc(100vh - var(--nav-h)); overflow-y:auto;
+    border-left:none; border-right:none; border-top:none;
+  }
+
+  /* Mobile search bar below header */
+  .mobile-search {
+    display:flex !important; padding:10px 14px;
+    border-bottom:1px solid var(--border); background:#fff;
+    position:sticky; top:var(--nav-h); z-index:490;
+  }
+  .mobile-search input {
+    width:100%; padding:9px 16px 9px 40px;
+    border:1.5px solid var(--border); border-radius:24px;
+    font-size:.875rem; font-family:inherit; color:var(--text);
+    background:#f8f8fc; outline:none;
+  }
+  .mobile-search input:focus { border-color:var(--p); background:#fff; }
+  .mobile-search svg { position:absolute; left:26px; top:50%; transform:translateY(-50%); width:17px; color:var(--muted); }
+
+  /* ── Pages padding ── */
+  #page-home,
+  #page-dashboard,
+  #page-cadastrar,
+  #page-agendar,
+  #page-historico,
+  #page-loja,
+  #page-estoque { padding:0; }
+  #page-dashboard > div,
+  #page-cadastrar > div,
+  #page-agendar   > div,
+  #page-historico > div,
+  #page-loja      > div,
+  #page-estoque   > div { padding:20px 14px; }
+
+  /* ── Hero ── */
+  .slide { height:220px; }
+  .slide-content { padding:0 44px; gap:16px; }
+  .slide-emoji { font-size:3.5rem; }
+  .slide-text h2 { font-size:1.1rem; }
+  .slide-text .old-price { font-size:.8rem; }
+  .slide-text .new-price { font-size:1.5rem; }
+  .slide-cta { font-size:.78rem; padding:9px 16px; }
+  .slide-deco { display:none; }
+
+  /* ── Feature strip ── */
+  .features-strip { grid-template-columns:1fr 1fr; }
+  .feat-item { padding:12px 14px; gap:8px; }
+  .feat-icon { font-size:1.2rem; }
+  .feat-text h4 { font-size:.75rem; }
+  .feat-text p  { font-size:.65rem; }
+
+  /* ── Home sections ── */
+  .home-section { padding:20px 14px; }
+  .section-title { font-size:1.1rem; margin-bottom:14px; }
+  .cats-grid { grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:24px; }
+  .cat-card  { padding:14px 8px; }
+  .cat-emoji { font-size:1.7rem; }
+  .cat-label { font-size:.72rem; }
+  .products-grid { grid-template-columns:repeat(2,1fr); gap:12px; }
+  .prod-img { height:110px; font-size:2.8rem; }
+  .prod-info { padding:10px; }
+  .prod-name { font-size:.78rem; }
+  .prod-price { font-size:.95rem; }
+  .btn-add-cart { font-size:.72rem; padding:7px; }
+  .promo-banner {
+    flex-direction:column; gap:18px; padding:22px 20px;
+    text-align:center;
+  }
+  .promo-text h2 { font-size:1.3rem; }
+  .btn-promo { width:100%; }
+
+  /* ── Dashboard ── */
+  .dash-header { flex-direction:column; gap:14px; align-items:flex-start; }
+  .dash-title h1 { font-size:1.3rem; }
+  .dash-actions { width:100%; }
+  .dash-actions button { flex:1; justify-content:center; }
+  .stat-cards { grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px; }
+  .stat-card  { padding:14px 16px; gap:10px; }
+  .stat-ico   { width:40px; height:40px; border-radius:10px; }
+  .stat-info span { font-size:1.5rem; }
+  .dash-grid  { grid-template-columns:1fr; gap:16px; }
+  .cta-card   { padding:24px 20px; }
+  .cta-card h3{ font-size:1.1rem; }
+
+  /* ── Cadastrar Pet ── */
+  #page-cadastrar > div > div[style] { grid-template-columns:1fr !important; gap:20px; }
+  .form-card { padding:20px 16px; }
+  .fg-row2   { grid-template-columns:1fr; gap:12px; }
+  .pets-grid { grid-template-columns:1fr 1fr; gap:12px; }
+  .pet-card  { padding:14px; }
+
+  /* ── Agendar ── */
+  #page-agendar > div > div[style] { grid-template-columns:1fr !important; }
+  .svc-cards { grid-template-columns:1fr 1fr; gap:10px; }
+  .svc-card  { padding:14px 10px; }
+  .svc-icon  { font-size:1.5rem; }
+  .svc-name  { font-size:.78rem; }
+  .svc-price { font-size:.7rem; }
+  .dash-card.sticky-agendar { position:static !important; }
+
+  /* ── Histórico ── */
+  .hist-item { flex-wrap:wrap; gap:10px; padding:14px 16px; }
+  .hist-info { min-width:0; }
+  .hist-date { font-size:.72rem; }
+
+  /* ── Estoque ── */
+  .est-header { flex-direction:column; gap:14px; align-items:flex-start; }
+  .est-title h1 { font-size:1.3rem; }
+  .est-stats { grid-template-columns:1fr 1fr; gap:10px; }
+  .est-stat  { padding:12px 14px; gap:10px; }
+  .est-stat-icon { width:36px; height:36px; border-radius:8px; }
+  .est-stat-info span { font-size:1.4rem; }
+  .toolbar { flex-direction:column; align-items:stretch; gap:10px; }
+  .filter-btns { flex-wrap:wrap; gap:6px; }
+  .filter-btn { font-size:.75rem; padding:6px 12px; }
+
+  /* Table horizontal scroll */
+  .table-card { overflow-x:auto; }
+  table       { min-width:580px; }
+  thead th, td { padding:10px 12px; font-size:.78rem; }
+  .prod-name-cell .pn { font-size:.78rem; }
+
+  /* ── Modals ── */
+  .modal { padding:22px 18px; margin:0 10px; border-radius:14px; }
+  .modal-grid { grid-template-columns:1fr; }
+  .modal-full { grid-column:1; }
+  .delete-modal { padding:28px 20px; margin:0 10px; border-radius:14px; }
+
+  /* ── Toast ── */
+  .toast { bottom:16px; right:12px; left:12px; text-align:center; border-radius:10px; }
+
+  /* Nav action labels */
+  .nav-btn span { display:none; }
+  .nav-btn { padding:8px; gap:0; }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE – SMALL MOBILE (≤420px)
+═══════════════════════════════════════════ */
+@media (max-width:420px) {
+  .cats-grid { grid-template-columns:repeat(2,1fr); }
+  .products-grid { grid-template-columns:1fr 1fr; gap:10px; }
+  .stat-cards { grid-template-columns:1fr; }
+  .pets-grid  { grid-template-columns:1fr; }
+  .est-stats  { grid-template-columns:1fr 1fr; }
+  .svc-cards  { grid-template-columns:1fr 1fr; }
+  .features-strip { grid-template-columns:1fr; }
+  .feat-item { border-right:none !important; border-top:1px solid var(--border) !important; }
+  .feat-item:first-child { border-top:none !important; }
+  .slide { height:190px; }
+  .slide-content { flex-direction:column; gap:6px; padding:0 44px; text-align:center; }
+  .slide-emoji { font-size:2.5rem; }
+  .slide-text h2 { font-size:.95rem; }
+  .slide-text .new-price { font-size:1.3rem; }
+  .slide-cta { font-size:.72rem; padding:7px 14px; }
+}
 </style>
 </head>
 <body>
@@ -761,7 +1030,10 @@ td { padding:13px 16px; font-size:.875rem; vertical-align:middle; }
       <span class="logo-name">PetCare</span>
     </div>
 
-    <!-- Search -->
+    <!-- Hamburger (mobile only) -->
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
+
+    <!-- Search (desktop) -->
     <div class="search-bar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input type="text" placeholder="O que está buscando hoje?"/>
@@ -936,8 +1208,70 @@ td { padding:13px 16px; font-size:.875rem; vertical-align:middle; }
   </div>
 </header>
 
-<!-- Overlay to close dropdowns -->
-<div id="overlay-close" onclick="closeMenus()"></div>
+<!-- Mobile search bar (shown on mobile below header) -->
+<div class="mobile-search" style="display:none; position:relative;">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  <input type="text" placeholder="O que está buscando hoje?"/>
+</div>
+
+<!-- Mobile slide-in menu -->
+<nav class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-header">
+    <div class="logo-wrap" onclick="goPage('home');closeMobileMenu()">
+      <div class="logo-paw"><svg viewBox="0 0 40 40" fill="#fff"><ellipse cx="14" cy="8" rx="4" ry="5.5" transform="rotate(-20 14 8)"/><ellipse cx="26" cy="8" rx="4" ry="5.5" transform="rotate(20 26 8)"/><ellipse cx="8" cy="19" rx="3.2" ry="4.5" transform="rotate(-15 8 19)"/><ellipse cx="32" cy="19" rx="3.2" ry="4.5" transform="rotate(15 32 19)"/><ellipse cx="20" cy="28" rx="9" ry="7"/></svg></div>
+      <span class="logo-name">PetCare</span>
+    </div>
+    <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
+  </div>
+
+  <div class="mobile-nav-section">Categorias</div>
+  <button class="mobile-nav-item" onclick="goPage('loja');closeMobileMenu()">🐶 Cachorros</button>
+  <button class="mobile-nav-item" onclick="goPage('loja');closeMobileMenu()">🐱 Gatos</button>
+  <button class="mobile-nav-item" onclick="goPage('loja');closeMobileMenu()">🐦 Pássaros</button>
+  <button class="mobile-nav-item" onclick="goPage('loja');closeMobileMenu()">🐟 Peixes</button>
+  <button class="mobile-nav-item" onclick="goPage('loja');closeMobileMenu()">🐰 Outros Pets</button>
+  <button class="mobile-nav-item" onclick="goPage('loja');closeMobileMenu()">🌿 Casa e Jardim</button>
+  <button class="mobile-nav-item promo" onclick="goPage('loja');closeMobileMenu()">🏷️ Promoções</button>
+
+  <div class="mobile-nav-section">Minha Conta</div>
+  <button class="mobile-nav-item" id="mob-dash-btn" onclick="goPage('dashboard');closeMobileMenu()" style="display:none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    Dashboard
+  </button>
+  <button class="mobile-nav-item" id="mob-pets-btn" onclick="goPage('cadastrar');closeMobileMenu()" style="display:none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Meus Pets
+  </button>
+  <button class="mobile-nav-item" id="mob-agendar-btn" onclick="goPage('agendar');closeMobileMenu()" style="display:none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Agendar Serviço
+  </button>
+  <button class="mobile-nav-item" id="mob-hist-btn" onclick="goPage('historico');closeMobileMenu()" style="display:none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    Histórico
+  </button>
+  <button class="mobile-nav-item" id="mob-loja-btn" onclick="goPage('loja');closeMobileMenu()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+    Loja
+  </button>
+
+  <div class="mobile-nav-section" id="mob-admin-section" style="display:none;">Administração</div>
+  <button class="mobile-nav-item admin-item" id="mob-estoque-btn" onclick="goPage('estoque');closeMobileMenu()" style="display:none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+    Gestão de Estoque
+  </button>
+
+  <div style="margin-top:auto; padding:16px 20px; border-top:1px solid var(--border);">
+    <button class="mobile-nav-item" id="mob-login-btn" onclick="closeMobileMenu();toggleLoginDD()" style="border:none;padding:14px 0;color:var(--p);font-weight:700;width:100%;justify-content:center;background:var(--p-light);border-radius:var(--r-sm);">
+      <svg width="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      <span id="mob-login-label">Entrar</span>
+    </button>
+    <button id="mob-logout-btn" onclick="doLogout();closeMobileMenu()" style="display:none;margin-top:8px;width:100%;padding:12px;background:var(--red-bg);color:var(--red);border:none;border-radius:var(--r-sm);font-weight:700;font-size:.875rem;cursor:pointer;font-family:inherit;">
+      Sair da conta
+    </button>
+  </div>
+</nav>
+
 
 <!-- ══════════════════════════════════════
   HOME PAGE
@@ -1615,7 +1949,15 @@ function onLogin() {
   btn.classList.add('active');
   if (currentUser.role==='admin') {
     document.getElementById('adminLinks').style.display='flex';
+    document.getElementById('mob-admin-section').style.display='block';
+    document.getElementById('mob-estoque-btn').style.display='flex';
   }
+  // show logged-in mobile items
+  ['mob-dash-btn','mob-pets-btn','mob-agendar-btn','mob-hist-btn'].forEach(id=>{
+    document.getElementById(id).style.display='flex';
+  });
+  document.getElementById('mob-login-label').textContent = currentUser.name;
+  document.getElementById('mob-logout-btn').style.display='block';
   document.getElementById('dash-user-greet').textContent = `👋 ${currentUser.name}`;
   closeMenus();
   showToast(`Bem-vindo, ${currentUser.name}!`,'success');
@@ -1626,6 +1968,13 @@ function doLogout() {
   document.getElementById('btn-entrar').innerHTML = `<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Entrar`;
   document.getElementById('btn-entrar').classList.remove('active');
   document.getElementById('adminLinks').style.display='none';
+  document.getElementById('mob-admin-section').style.display='none';
+  document.getElementById('mob-estoque-btn').style.display='none';
+  ['mob-dash-btn','mob-pets-btn','mob-agendar-btn','mob-hist-btn'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+  document.getElementById('mob-login-label').textContent='Entrar';
+  document.getElementById('mob-logout-btn').style.display='none';
   document.getElementById('loginEmail').value='';
   document.getElementById('loginPwd').value='';
   clearDDMsgs();
@@ -1864,6 +2213,20 @@ function showToast(msg, type='success') {
   t.textContent=msg; t.className=`toast ${type} show`;
   clearTimeout(t._t);
   t._t=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+/* ── MOBILE MENU ── */
+function toggleMobileMenu() {
+  const m = document.getElementById('mobileMenu');
+  const h = document.getElementById('hamburger');
+  const isOpen = m.classList.toggle('open');
+  h.classList.toggle('open', isOpen);
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+}
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 /* ── ENTER KEY LOGIN ── */
