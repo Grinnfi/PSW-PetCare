@@ -8,7 +8,8 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-route
 
 import Header       from './components/Header'
 import Toast        from './components/Toast'
-import Carrinho     from './components/Carrinho'   // ← NOVO
+import Carrinho     from './components/Carrinho'
+import Checkout     from './pages/Checkout'
 import Home         from './pages/Home'
 import Dashboard    from './pages/Dashboard'
 import CadastrarPet from './pages/CadastrarPet'
@@ -113,6 +114,9 @@ function AppContent() {
         } />
         <Route path="/loja" element={
           <Loja addToCart={addToCart} />
+        } />
+        <Route path="/checkout" element={
+          <Checkout itensCarrinho={itensCarrinho} setItensCarrinho={setItensCarrinho} showToast={showToast} />
         } />
 
         <Route path="/dashboard" element={

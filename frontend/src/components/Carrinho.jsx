@@ -5,6 +5,7 @@
 // ══════════════════════════════════════════════
 
 import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 // ── Helper: extrai número de uma string de preço ──
 const extrairPreco = (str) => parseFloat(str.replace('R$', '').replace(',', '.').trim())
@@ -17,6 +18,7 @@ const CUPONS = {
 }
 
 export default function Carrinho({ itens, setItens, isOpen, onClose, showToast }) {
+  const navigate = useNavigate()
 
   // ── Estado do cupom ──
   const [cupomInput,  setCupomInput]  = useState('')
@@ -85,10 +87,8 @@ export default function Carrinho({ itens, setItens, isOpen, onClose, showToast }
       showToast('Seu carrinho está vazio!', 'error')
       return
     }
-    showToast(`Compra finalizada! Total: R$ ${total.toFixed(2).replace('.', ',')} ✅`, 'success')
-    setItens([])
-    setCupomAplicado(null)
     onClose()
+    navigate('/checkout')
   }
 
   // ── Formata valor para exibição ──
