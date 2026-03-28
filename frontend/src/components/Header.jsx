@@ -10,7 +10,7 @@ import LoginDropdown from './LoginDropdown'
 import UserMenu      from './UserMenu'
 import MobileMenu    from './MobileMenu'
 
-export default function Header({ currentUser, cartCount, users, onLogin, onLogout, onRegister, showToast }) {
+export default function Header({ currentUser, cartCount, users, onLogin, onLogout, onRegister, showToast, onCartClick }) {
   const navigate = useNavigate()
 
   // Estado de visibilidade dos menus
@@ -148,7 +148,7 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
             </div>
 
             {/* Carrinho */}
-            <button className="cart-btn" onClick={() => showToast('Carrinho em breve!', 'info')}>
+            <button className="cart-btn" onClick={onCartClick}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
