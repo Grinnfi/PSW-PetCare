@@ -9,13 +9,12 @@ Este projeto foi desenvolvido como trabalho acadêmico e consiste em um **websit
 
 O sistema foi pensado para facilitar a experiência do cliente, centralizando compras e serviços em uma única plataforma.
 
----
 
 ## 🚀 Tecnologias utilizadas
 
 * HTML, CSS, JavaScript
 * React
----
+
 
 ## 📦 Como executar o projeto localmente
 
@@ -29,7 +28,7 @@ Abra o terminal e execute:
 git clone https://github.com/Grinnfi/PSW-PetCare.git
 ```
 
----
+
 
 ### 2. Acessar a pasta do projeto
 
@@ -37,7 +36,6 @@ git clone https://github.com/Grinnfi/PSW-PetCare.git
 cd PWS-PetCare
 ```
 
----
 
 ### 3. Instalar as dependências
 
@@ -51,7 +49,6 @@ ou
 yarn install
 ```
 
----
 
 ### 4. Executar o projeto
 
@@ -65,7 +62,6 @@ ou
 npm run dev
 ```
 
----
 
 ### 5. Acessar no navegador
 
@@ -77,7 +73,6 @@ http://localhost:3000
 
 *(ou a porta indicada no terminal)*
 
----
 
 ## 📌 Funcionalidades
 
@@ -87,7 +82,6 @@ http://localhost:3000
 * Agendamento de serviços
 * Interface amigável
 
----
 
 ## 👨‍💻 Integrantes do projeto
 
@@ -97,7 +91,6 @@ Juliana Souza Telles
 Ryan Filipe de Mendonça Borges
 
 
----
 
 ## 📄 Licença
 
