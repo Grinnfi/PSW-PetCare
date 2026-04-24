@@ -1,4 +1,4 @@
-// ══════════════════════════════════════════════
+﻿// ══════════════════════════════════════════════
 // Header.jsx — Cabeçalho principal
 // Composto por: nav-top, nav-bottom, LoginDropdown,
 //               UserMenu e MobileMenu
@@ -13,18 +13,15 @@ import MobileMenu    from './MobileMenu'
 export default function Header({ currentUser, cartCount, users, onLogin, onLogout, onRegister, showToast, onCartClick }) {
   const navigate = useNavigate()
 
-  // Estado de visibilidade dos menus
-  const [loginOpen, setLoginOpen]   = useState(false)
+  const [loginOpen, setLoginOpen]       = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileOpen, setMobileOpen]     = useState(false)
 
-  // Fecha todos os menus
   const closeAll = () => {
     setLoginOpen(false)
     setUserMenuOpen(false)
   }
 
-  // Alterna login dropdown ou user menu dependendo do estado de login
   const handleLoginBtn = () => {
     if (currentUser) {
       setUserMenuOpen(o => !o)
@@ -35,14 +32,12 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
     }
   }
 
-  // Navega e fecha menus abertos
   const goTo = (path) => {
     navigate(path)
     closeAll()
     setMobileOpen(false)
   }
 
-  // Exige login antes de usar funcionalidade
   const requireLogin = () => {
     if (!currentUser) {
       showToast('Faça login para continuar.', 'info')
@@ -58,7 +53,6 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
 
   return (
     <>
-      {/* Overlay invisível para fechar dropdowns ao clicar fora */}
       {(loginOpen || userMenuOpen) && (
         <div
           style={{ position: 'fixed', inset: 0, zIndex: 400 }}
@@ -67,10 +61,8 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
       )}
 
       <header>
-        {/* ── Linha superior do nav ── */}
         <div className="nav-top">
 
-          {/* Logo */}
           <div className="logo-wrap" onClick={() => goTo('/')}>
             <div className="logo-paw">
               <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
@@ -84,7 +76,6 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
             <span className="logo-name">PetCare</span>
           </div>
 
-          {/* Hamburguer (visível só no mobile via CSS) */}
           <button
             className={`hamburger ${mobileOpen ? 'open' : ''}`}
             onClick={() => setMobileOpen(o => !o)}
@@ -92,18 +83,15 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
             <span /><span /><span />
           </button>
 
-          {/* Barra de busca (desktop) */}
           <div className="search-bar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8"/>
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <input type="text" placeholder="O que está buscando hoje?" />
+            <input type="text" placeholder="O que está buscando hoje?" autoComplete="off" />
           </div>
 
-          {/* Ações do nav */}
           <div className="nav-actions">
-            {/* Botão repetir pedido */}
             <button className="nav-btn" onClick={requireLogin}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="1 4 1 10 7 10"/>
@@ -112,7 +100,6 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
               <span>Repetir pedido</span>
             </button>
 
-            {/* Botão Entrar / Nome do usuário */}
             <div style={{ position: 'relative' }}>
               <button
                 className={`nav-btn ${currentUser ? 'active' : ''}`}
@@ -125,7 +112,6 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
                 <span>{currentUser ? `${currentUser.name} ▾` : 'Entrar'}</span>
               </button>
 
-              {/* Dropdown de login (só quando não logado) */}
               {!currentUser && (
                 <LoginDropdown
                   isOpen={loginOpen}
@@ -136,7 +122,6 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
                 />
               )}
 
-              {/* Menu do usuário logado */}
               {currentUser && (
                 <UserMenu
                   isOpen={userMenuOpen}
@@ -147,7 +132,6 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
               )}
             </div>
 
-            {/* Carrinho */}
             <button className="cart-btn" onClick={onCartClick}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="9" cy="21" r="1"/>
@@ -159,16 +143,14 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
           </div>
         </div>
 
-        {/* ── Linha inferior do nav: categorias + links admin ── */}
         <div className="nav-bottom">
           <div className="nav-cats">
             {CATEGORIAS.map(cat => (
-              <button key={cat} className="nav-cat" onClick={() => goTo('/loja')}>{cat}</button>
+              <button key={cat} className="nav-cat" onClick={() => goTo(`/loja?categoria=${encodeURIComponent(cat)}`)}>{cat}</button>
             ))}
             <button className="nav-cat promo" onClick={() => goTo('/loja')}>🏷️ Promoções</button>
           </div>
 
-          {/* Links de admin (só para role='admin') */}
           {isAdmin && (
             <div className="nav-admin-links">
               <button className="nav-admin-btn" onClick={() => goTo('/dashboard')}>
@@ -197,16 +179,14 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
         </div>
       </header>
 
-      {/* Barra de busca mobile (visível só no mobile via CSS) */}
       <div className="mobile-search" style={{ position: 'relative' }}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="11" cy="11" r="8"/>
           <line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input type="text" placeholder="O que está buscando hoje?" />
+        <input type="text" placeholder="O que está buscando hoje?" autoComplete="off" />
       </div>
 
-      {/* Menu lateral mobile */}
       <MobileMenu
         isOpen={mobileOpen}
         onClose={() => setMobileOpen(false)}
@@ -218,3 +198,4 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
     </>
   )
 }
+
