@@ -1,36 +1,319 @@
 {
   "users": [
-    { "id": 1, "email": "admin@petcare.com", "password": "admin123", "name": "Administrador", "role": "admin" },
-    { "id": 2, "email": "carlos@email.com", "password": "123456", "name": "Carlos", "role": "user" },
-    { "id": 3, "email": "ana@email.com", "password": "123456", "name": "Ana Lima", "role": "user" }
+    {
+      "id": 1,
+      "email": "admin@petcare.com",
+      "password": "admin123",
+      "name": "Administrador",
+      "role": "admin"
+    },
+    {
+      "id": 2,
+      "email": "carlos@email.com",
+      "password": "123456",
+      "name": "Carlos",
+      "role": "user"
+    },
+    {
+      "id": 3,
+      "email": "ana@email.com",
+      "password": "123456",
+      "name": "Ana Lima",
+      "role": "user"
+    }
   ],
   "pets": [
-    { "id": 1, "name": "Mel", "especie": "Cachorro", "raca": "Poodle", "sexo": "Fêmea", "idade": "3 anos", "donoId": 2, "donoNome": "Carlos", "obs": "" },
-    { "id": 2, "name": "Thor", "especie": "Cachorro", "raca": "Golden Retriever", "sexo": "Macho", "idade": "5 anos", "donoId": 2, "donoNome": "Carlos", "obs": "Alergia a frango" },
-    { "id": 3, "name": "Luna", "especie": "Gato", "raca": "Siamês", "sexo": "Fêmea", "idade": "2 anos", "donoId": 3, "donoNome": "Ana Lima", "obs": "" }
+    {
+      "id": 1,
+      "name": "Mel",
+      "especie": "Cachorro",
+      "raca": "Poodle",
+      "sexo": "Fêmea",
+      "idade": "3 anos",
+      "donoId": 2,
+      "donoNome": "Carlos",
+      "obs": ""
+    },
+    {
+      "id": 2,
+      "name": "Thor",
+      "especie": "Cachorro",
+      "raca": "Golden Retriever",
+      "sexo": "Macho",
+      "idade": "5 anos",
+      "donoId": 2,
+      "donoNome": "Carlos",
+      "obs": "Alergia a frango"
+    },
+    {
+      "id": 3,
+      "name": "Luna",
+      "especie": "Gato",
+      "raca": "Siamês",
+      "sexo": "Fêmea",
+      "idade": "2 anos",
+      "donoId": 3,
+      "donoNome": "Ana Lima",
+      "obs": ""
+    }
   ],
   "agendamentos": [
-    { "id": 1, "petId": 1, "petNome": "Mel", "petEspecie": "Cachorro", "donoId": 2, "donoNome": "Carlos", "servico": "Banho & Tosa", "data": "2026-03-17", "hora": "10:00", "status": "concluido" },
-    { "id": 2, "petId": 2, "petNome": "Thor", "petEspecie": "Cachorro", "donoId": 2, "donoNome": "Carlos", "servico": "Consulta Veterinária", "data": "2026-03-19", "hora": "14:30", "status": "concluido" },
-    { "id": 3, "petId": 3, "petNome": "Luna", "petEspecie": "Gato", "donoId": 3, "donoNome": "Ana Lima", "servico": "Vacinação", "data": "2026-05-10", "hora": "09:00", "status": "pendente" },
-    { "id": 4, "petId": 1, "petNome": "Mel", "petEspecie": "Cachorro", "donoId": 2, "donoNome": "Carlos", "servico": "Hotel Pet", "data": "2026-05-20", "hora": "08:00", "status": "pendente" }
+    {
+      "id": 1,
+      "petId": 1,
+      "petNome": "Mel",
+      "petEspecie": "Cachorro",
+      "donoId": 2,
+      "donoNome": "Carlos",
+      "servico": "Banho & Tosa",
+      "data": "2026-03-17",
+      "hora": "10:00",
+      "status": "concluido"
+    },
+    {
+      "id": 2,
+      "petId": 2,
+      "petNome": "Thor",
+      "petEspecie": "Cachorro",
+      "donoId": 2,
+      "donoNome": "Carlos",
+      "servico": "Consulta Veterinária",
+      "data": "2026-03-19",
+      "hora": "14:30",
+      "status": "concluido"
+    },
+    {
+      "id": 3,
+      "petId": 3,
+      "petNome": "Luna",
+      "petEspecie": "Gato",
+      "donoId": 3,
+      "donoNome": "Ana Lima",
+      "servico": "Vacinação",
+      "data": "2026-05-10",
+      "hora": "09:00",
+      "status": "pendente"
+    },
+    {
+      "id": 4,
+      "petId": 1,
+      "petNome": "Mel",
+      "petEspecie": "Cachorro",
+      "donoId": 2,
+      "donoNome": "Carlos",
+      "servico": "Hotel Pet",
+      "data": "2026-05-20",
+      "hora": "08:00",
+      "status": "pendente"
+    }
   ],
   "compras": [
-    { "id": 1, "donoId": 2, "donoNome": "Carlos", "itens": [{"nome": "Ração Premium Cão Adulto 15kg", "qtd": 1, "preco": 89.90}, {"nome": "Shampoo Pet Neutro 500ml", "qtd": 1, "preco": 28.90}, {"nome": "Coleira Antipulgas", "qtd": 1, "preco": 45.00}], "total": 163.80, "data": "2026-02-28", "status": "entregue" },
-    { "id": 2, "donoId": 3, "donoNome": "Ana Lima", "itens": [{"nome": "Areia Higiênica Gato 4kg", "qtd": 2, "preco": 35.00}], "total": 70.00, "data": "2026-03-05", "status": "entregue" }
+    {
+      "id": 1,
+      "donoId": 2,
+      "donoNome": "Carlos",
+      "itens": [
+        {
+          "nome": "Ração Premium Cão Adulto 15kg",
+          "qtd": 1,
+          "preco": 89.9
+        },
+        {
+          "nome": "Shampoo Pet Neutro 500ml",
+          "qtd": 1,
+          "preco": 28.9
+        },
+        {
+          "nome": "Coleira Antipulgas",
+          "qtd": 1,
+          "preco": 45
+        }
+      ],
+      "total": 163.8,
+      "data": "2026-02-28",
+      "status": "entregue"
+    },
+    {
+      "id": 2,
+      "donoId": 3,
+      "donoNome": "Ana Lima",
+      "itens": [
+        {
+          "nome": "Areia Higiênica Gato 4kg",
+          "qtd": 2,
+          "preco": 35
+        }
+      ],
+      "total": 70,
+      "data": "2026-03-05",
+      "status": "entregue"
+    },
+    {
+      "donoId": 1,
+      "donoNome": "Administrador",
+      "itens": [
+        {
+          "nome": "Ração Premium Cão 15kg",
+          "qtd": 2,
+          "preco": 85.9
+        }
+      ],
+      "total": 171.8,
+      "data": "2026-04-26",
+      "status": "entregue",
+      "id": 3
+    },
+    {
+      "donoId": 1,
+      "donoNome": "Administrador",
+      "itens": [
+        {
+          "nome": "Ração Premium Cão 15kg",
+          "qtd": 5,
+          "preco": 85.9
+        }
+      ],
+      "total": 429.5,
+      "data": "2026-04-26",
+      "status": "entregue",
+      "id": 4
+    },
+    {
+      "donoId": 1,
+      "donoNome": "Administrador",
+      "itens": [
+        {
+          "nome": "Ração Premium Cão 15kg",
+          "qtd": 2,
+          "preco": 85.9
+        }
+      ],
+      "total": 171.8,
+      "data": "2026-04-26",
+      "status": "entregue",
+      "id": 5
+    }
   ],
   "products": [
-    { "id": 1, "name": "Ração Premium Cão Adulto 15kg", "unit": "saco", "cat": "Alimentação", "price": 89.90, "stock": 45, "desc": "Ração premium para cães adultos.", "emoji": "🦴" },
-    { "id": 2, "name": "Ração Premium Gato 3kg", "unit": "saco", "cat": "Alimentação", "price": 65.00, "stock": 30, "desc": "Ração completa para gatos.", "emoji": "🐱" },
-    { "id": 3, "name": "Shampoo Pet Neutro 500ml", "unit": "frasco", "cat": "Higiene", "price": 28.90, "stock": 60, "desc": "Shampoo neutro.", "emoji": "🛁" },
-    { "id": 4, "name": "Coleira Antipulgas", "unit": "unidade", "cat": "Saúde", "price": 45.00, "stock": 25, "desc": "Coleira antiparasitária.", "emoji": "🏷️" },
-    { "id": 5, "name": "Brinquedo Mordedor", "unit": "unidade", "cat": "Acessórios", "price": 19.90, "stock": 80, "desc": "Brinquedo de borracha.", "emoji": "🎾" },
-    { "id": 6, "name": "Cama Pet Grande", "unit": "unidade", "cat": "Acessórios", "price": 120.00, "stock": 12, "desc": "Cama acolchoada.", "emoji": "🛏️" },
-    { "id": 7, "name": "Areia Higiênica Gato 4kg", "unit": "pacote", "cat": "Higiene", "price": 35.00, "stock": 40, "desc": "Areia granulada.", "emoji": "🪣" },
-    { "id": 8, "name": "Vacina Antirrábica", "unit": "dose", "cat": "Saúde", "price": 55.00, "stock": 20, "desc": "Vacina antirrábica.", "emoji": "💉" },
-    { "id": 9, "name": "Comedouro Inox M", "unit": "unidade", "cat": "Acessórios", "price": 32.00, "stock": 35, "desc": "Comedouro de aço inox.", "emoji": "🥣" },
-    { "id": 10, "name": "Antipulgas Spray 200ml", "unit": "frasco", "cat": "Higiene", "price": 38.50, "stock": 5, "desc": "Spray antipulgas.", "emoji": "🧴" },
-    { "id": 11, "name": "Osso Mastigável Natural", "unit": "unidade", "cat": "Alimentação", "price": 12.00, "stock": 90, "desc": "Osso natural.", "emoji": "🦴" },
-    { "id": 12, "name": "Vitaminas Pet Comprimido", "unit": "pote", "cat": "Saúde", "price": 48.00, "stock": 0, "desc": "Suplemento vitamínico.", "emoji": "💊" }
+    {
+      "id": 1,
+      "name": "Ração Premium Cão Adulto 15kg",
+      "unit": "saco",
+      "cat": "Alimentação",
+      "price": 89.9,
+      "stock": 45,
+      "desc": "Ração premium para cães adultos.",
+      "emoji": "🦴"
+    },
+    {
+      "id": 2,
+      "name": "Ração Premium Gato 3kg",
+      "unit": "saco",
+      "cat": "Alimentação",
+      "price": 65,
+      "stock": 30,
+      "desc": "Ração completa para gatos.",
+      "emoji": "🐱"
+    },
+    {
+      "id": 3,
+      "name": "Shampoo Pet Neutro 500ml",
+      "unit": "frasco",
+      "cat": "Higiene",
+      "price": 28.9,
+      "stock": 60,
+      "desc": "Shampoo neutro.",
+      "emoji": "🛁"
+    },
+    {
+      "id": 4,
+      "name": "Coleira Antipulgas",
+      "unit": "unidade",
+      "cat": "Saúde",
+      "price": 45,
+      "stock": 25,
+      "desc": "Coleira antiparasitária.",
+      "emoji": "🏷️"
+    },
+    {
+      "id": 5,
+      "name": "Brinquedo Mordedor",
+      "unit": "unidade",
+      "cat": "Acessórios",
+      "price": 19.9,
+      "stock": 80,
+      "desc": "Brinquedo de borracha.",
+      "emoji": "🎾"
+    },
+    {
+      "id": 6,
+      "name": "Cama Pet Grande",
+      "unit": "unidade",
+      "cat": "Acessórios",
+      "price": 120,
+      "stock": 12,
+      "desc": "Cama acolchoada.",
+      "emoji": "🛏️"
+    },
+    {
+      "id": 7,
+      "name": "Areia Higiênica Gato 4kg",
+      "unit": "pacote",
+      "cat": "Higiene",
+      "price": 35,
+      "stock": 40,
+      "desc": "Areia granulada.",
+      "emoji": "🪣"
+    },
+    {
+      "id": 8,
+      "name": "Vacina Antirrábica",
+      "unit": "dose",
+      "cat": "Saúde",
+      "price": 55,
+      "stock": 20,
+      "desc": "Vacina antirrábica.",
+      "emoji": "💉"
+    },
+    {
+      "id": 9,
+      "name": "Comedouro Inox M",
+      "unit": "unidade",
+      "cat": "Acessórios",
+      "price": 32,
+      "stock": 35,
+      "desc": "Comedouro de aço inox.",
+      "emoji": "🥣"
+    },
+    {
+      "id": 10,
+      "name": "Antipulgas Spray 200ml",
+      "unit": "frasco",
+      "cat": "Higiene",
+      "price": 38.5,
+      "stock": 5,
+      "desc": "Spray antipulgas.",
+      "emoji": "🧴"
+    },
+    {
+      "id": 11,
+      "name": "Osso Mastigável Natural",
+      "unit": "unidade",
+      "cat": "Alimentação",
+      "price": 12,
+      "stock": 90,
+      "desc": "Osso natural.",
+      "emoji": "🦴"
+    },
+    {
+      "id": 12,
+      "name": "Vitaminas Pet Comprimido",
+      "unit": "pote",
+      "cat": "Saúde",
+      "price": 48,
+      "stock": 0,
+      "desc": "Suplemento vitamínico.",
+      "emoji": "💊"
+    }
   ]
 }
