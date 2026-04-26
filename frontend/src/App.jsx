@@ -1,10 +1,10 @@
 // ══════════════════════════════════════════════
-// App.jsx — Componente raiz
-// Contém: estado global, React Router, rotas protegidas
+// App.jsx — Componente raiz com Redux
 // ══════════════════════════════════════════════
 
-import { useState, useCallback } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 
 import Header       from './components/Header'
 import Toast        from './components/Toast'
@@ -18,30 +18,29 @@ import Historico    from './pages/Historico'
 import Loja         from './pages/Loja'
 import Estoque      from './pages/Estoque'
 
-import { INITIAL_USERS, INITIAL_PETS, INITIAL_PRODUCTS } from './data/initialData'
+import { fetchUsers, login, logout, registerUser } from './store/authSlice'
+import { fetchPets }          from './store/petsSlice'
+import { fetchAgendamentos }  from './store/agendamentosSlice'
+import { fetchCompras }       from './store/comprasSlice'
+import { fetchProducts }      from './store/productsSlice'
+import { addItem, abrirCarrinho, fecharCarrinho } from './store/carrinhoSlice'
 
-// ── Componente auxiliar: Rota Protegida ─────────────
 function RotaProtegida({ currentUser, adminOnly = false, children }) {
   if (!currentUser) return <Navigate to="/" replace />
   if (adminOnly && currentUser.role !== 'admin') return <Navigate to="/" replace />
   return children
 }
 
-// ── Conteúdo principal do App ────────────────────────
 function AppContent() {
-  const navigate = useNavigate()
+  const navigate  = useNavigate()
+  const dispatch  = useDispatch()
 
-  // ── Estado global ──
-  const [users, setUsers]             = useState(INITIAL_USERS)
-  const [currentUser, setCurrentUser] = useState(null)
-  const [pets, setPets]               = useState(INITIAL_PETS)
-  const [products, setProducts]       = useState(INITIAL_PRODUCTS)
+  // Seletores Redux
+  const currentUser = useSelector(s => s.auth.currentUser)
+  const users       = useSelector(s => s.auth.users)
+  const carrinhoAberto = useSelector(s => s.carrinho.aberto)
 
-  // ── Estado do carrinho ──                          // ← NOVO
-  const [itensCarrinho, setItensCarrinho] = useState([])
-  const [carrinhoAberto, setCarrinhoAberto] = useState(false)
-
-  // ── Toast ──
+  // Toast local (não precisa ser global no Redux para este caso)
   const [toast, setToast] = useState({ msg: '', type: 'success', visible: false })
 
   const showToast = useCallback((msg, type = 'success') => {
@@ -49,44 +48,45 @@ function AppContent() {
     setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 3000)
   }, [])
 
-  // ── Login / Logout / Cadastro ──
+  // Carrega dados do backend ao iniciar
+  useEffect(() => {
+    dispatch(fetchUsers())
+    dispatch(fetchPets())
+    dispatch(fetchAgendamentos())
+    dispatch(fetchCompras())
+    dispatch(fetchProducts())
+  }, [dispatch])
+
+  // ── Login ──
   const handleLogin = useCallback((user) => {
-    setCurrentUser(user)
+    dispatch(login(user))
     showToast(`Bem-vindo, ${user.name}!`, 'success')
     navigate('/dashboard')
-  }, [showToast, navigate])
+  }, [dispatch, showToast, navigate])
 
+  // ── Logout ──
   const handleLogout = useCallback(() => {
-    setCurrentUser(null)
+    dispatch(logout())
     showToast('Sessão encerrada.', 'info')
     navigate('/')
-  }, [showToast, navigate])
+  }, [dispatch, showToast, navigate])
 
-  const handleRegister = useCallback((novoUsuario) => {
-    setUsers(prev => [...prev, novoUsuario])
-  }, [])
+  // ── Cadastro ──
+  const handleRegister = useCallback(async (novoUsuario) => {
+    const result = await dispatch(registerUser(novoUsuario))
+    return result
+  }, [dispatch])
 
-  // ── Adicionar ao carrinho ──                       // ← ATUALIZADO
-  // Recebe o objeto produto completo { id, nome, preco, emoji }
+  // ── Carrinho ──
   const addToCart = useCallback((produto) => {
-    setItensCarrinho(prev => {
-      const existe = prev.find(i => i.id === produto.id)
-      if (existe) {
-        // Produto já está no carrinho: incrementa quantidade
-        return prev.map(i => i.id === produto.id ? { ...i, qtd: i.qtd + 1 } : i)
-      }
-      // Produto novo: adiciona com qtd 1
-      return [...prev, { ...produto, qtd: 1 }]
-    })
-    showToast(`"${produto.nome}" adicionado ao carrinho! 🛒`, 'success')
-  }, [showToast])
+    dispatch(addItem(produto))
+    showToast(`"${produto.name || produto.nome}" adicionado ao carrinho! 🛒`, 'success')
+  }, [dispatch, showToast])
 
-  // Quantidade total de itens (para o badge do Header)
-  const cartCount = itensCarrinho.reduce((a, i) => a + i.qtd, 0)
+  const cartCount = useSelector(s => s.carrinho.itens.reduce((a, i) => a + i.qtd, 0))
 
   return (
     <>
-      {/* Cabeçalho */}
       <Header
         currentUser={currentUser}
         cartCount={cartCount}
@@ -95,19 +95,15 @@ function AppContent() {
         onLogout={handleLogout}
         onRegister={handleRegister}
         showToast={showToast}
-        onCartClick={() => setCarrinhoAberto(true)}   // ← NOVO
+        onCartClick={() => dispatch(abrirCarrinho())}
       />
 
-      {/* Drawer do carrinho */}
-      <Carrinho                                        // ← NOVO
-        itens={itensCarrinho}
-        setItens={setItensCarrinho}
+      <Carrinho
         isOpen={carrinhoAberto}
-        onClose={() => setCarrinhoAberto(false)}
+        onClose={() => dispatch(fecharCarrinho())}
         showToast={showToast}
       />
 
-      {/* Rotas */}
       <Routes>
         <Route path="/" element={
           <Home addToCart={addToCart} currentUser={currentUser} showToast={showToast} />
@@ -116,22 +112,21 @@ function AppContent() {
           <Loja addToCart={addToCart} />
         } />
         <Route path="/checkout" element={
-          <Checkout itensCarrinho={itensCarrinho} setItensCarrinho={setItensCarrinho} showToast={showToast} />
+          <Checkout showToast={showToast} />
         } />
-
         <Route path="/dashboard" element={
           <RotaProtegida currentUser={currentUser}>
-            <Dashboard currentUser={currentUser} pets={pets} />
+            <Dashboard currentUser={currentUser} showToast={showToast} />
           </RotaProtegida>
         } />
         <Route path="/cadastrar" element={
           <RotaProtegida currentUser={currentUser}>
-            <CadastrarPet pets={pets} setPets={setPets} showToast={showToast} />
+            <CadastrarPet showToast={showToast} />
           </RotaProtegida>
         } />
         <Route path="/agendar" element={
           <RotaProtegida currentUser={currentUser}>
-            <Agendar pets={pets} showToast={showToast} />
+            <Agendar showToast={showToast} />
           </RotaProtegida>
         } />
         <Route path="/historico" element={
@@ -141,14 +136,12 @@ function AppContent() {
         } />
         <Route path="/estoque" element={
           <RotaProtegida currentUser={currentUser} adminOnly>
-            <Estoque products={products} setProducts={setProducts} showToast={showToast} />
+            <Estoque showToast={showToast} />
           </RotaProtegida>
         } />
-
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
-      {/* Toast global */}
       <Toast msg={toast.msg} type={toast.type} visible={toast.visible} />
     </>
   )
