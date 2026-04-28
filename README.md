@@ -43,27 +43,22 @@ cd PWS-PetCare
 npm install
 ```
 
-ou
-
-```bash
-yarn install
-```
-
 
 ### 4. Executar o projeto
-
-```bash
-npm start
-```
-
-ou
 
 ```bash
 npm run dev
 ```
 
 
-### 5. Acessar no navegador
+### 4. Executar o servidor
+
+```bash
+npm run server
+```
+
+
+### 6. Acessar no navegador
 
 Após iniciar o servidor, acesse:
 
