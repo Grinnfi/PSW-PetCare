@@ -600,16 +600,13 @@ header {
 .page {
   display: block;
   min-height: calc(100vh - var(--nav-h) - 44px);
-}
-
-#page-dashboard,
-#page-cadastrar,
-#page-agendar,
-#page-historico,
-#page-loja,
-#page-estoque {
   padding: 36px 40px;
 }
+
+#page-home {
+  padding: 0;
+}
+
 
 /* HOME */
 .hero {
