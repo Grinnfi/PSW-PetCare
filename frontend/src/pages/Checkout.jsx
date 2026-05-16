@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { limparCarrinho } from '../store/carrinhoSlice'
 import { addCompra } from '../store/comprasSlice'
+import * as masks from '../utils/masks'
 
 // ── Helpers ──
 const fmt = (v) => 'R$ ' + Number(v).toFixed(2).replace('.', ',')
@@ -56,6 +57,17 @@ export default function Checkout({ showToast }) {
   const [numCartao, setNumCartao] = useState('')
   const [validade, setValidade] = useState('')
   const [cvv, setCvv] = useState('')
+
+  // ── Handlers com Máscaras ──
+  const handleNome = (v) => setNome(masks.maskOnlyLetters(v))
+  const handleTel = (v) => setTel(masks.maskPhone(v))
+  const handleCep = (v) => setCep(masks.maskCEP(v))
+  const handleNumero = (v) => setNumero(masks.maskOnlyNumbers(v).substring(0, 10))
+
+  const handleNomCartao = (v) => setNomCartao(masks.maskOnlyLetters(v).toUpperCase())
+  const handleNumCartao = (v) => setNumCartao(masks.maskCardNumber(v))
+  const handleValidade = (v) => setValidade(masks.maskCardExpiry(v))
+  const handleCvv = (v) => setCvv(masks.maskCVV(v))
 
   // ── Totais ──
   const { subtotal, desconto, total } = useMemo(() => {
@@ -154,7 +166,7 @@ export default function Checkout({ showToast }) {
               <div className="fg">
                 <label>Nome completo <span>*</span></label>
                 <input className="fc" type="text" placeholder="Seu nome"
-                  value={nome} onChange={e => setNome(e.target.value)} />
+                  value={nome} onChange={e => handleNome(e.target.value)} />
               </div>
               <div className="fg fg-row2">
                 <div>
@@ -165,7 +177,7 @@ export default function Checkout({ showToast }) {
                 <div>
                   <label>Telefone <span>*</span></label>
                   <input className="fc" type="tel" placeholder="(21) 99999-9999"
-                    value={tel} onChange={e => setTel(e.target.value)} />
+                    value={tel} onChange={e => handleTel(e.target.value)} />
                 </div>
               </div>
             </div>
@@ -179,12 +191,12 @@ export default function Checkout({ showToast }) {
                 <div>
                   <label>CEP <span>*</span></label>
                   <input className="fc" type="text" placeholder="00000-000"
-                    value={cep} onChange={e => setCep(e.target.value)} />
+                    value={cep} onChange={e => handleCep(e.target.value)} />
                 </div>
                 <div>
                   <label>Número <span>*</span></label>
                   <input className="fc" type="text" placeholder="123"
-                    value={numero} onChange={e => setNumero(e.target.value)} />
+                    value={numero} onChange={e => handleNumero(e.target.value)} />
                 </div>
               </div>
               <div className="fg">
@@ -245,24 +257,24 @@ export default function Checkout({ showToast }) {
                 <>
                   <div className="fg" style={{ marginTop: '20px' }}>
                     <label>Nome no cartão <span>*</span></label>
-                    <input className="fc" type="text" placeholder="Como está no cartão"
-                      value={nomCartao} onChange={e => setNomCartao(e.target.value)} />
+                    <input className="fc" type="text" placeholder="COMO ESTÁ NO CARTÃO"
+                      value={nomCartao} onChange={e => handleNomCartao(e.target.value)} />
                   </div>
                   <div className="fg">
                     <label>Número do cartão</label>
                     <input className="fc" type="text" placeholder="0000 0000 0000 0000"
-                      maxLength={19} value={numCartao} onChange={e => setNumCartao(e.target.value)} />
+                      value={numCartao} onChange={e => handleNumCartao(e.target.value)} />
                   </div>
                   <div className="fg fg-row2">
                     <div>
                       <label>Validade</label>
                       <input className="fc" type="text" placeholder="MM/AA"
-                        maxLength={5} value={validade} onChange={e => setValidade(e.target.value)} />
+                        value={validade} onChange={e => handleValidade(e.target.value)} />
                     </div>
                     <div>
                       <label>CVV</label>
                       <input className="fc" type="text" placeholder="000"
-                        maxLength={3} value={cvv} onChange={e => setCvv(e.target.value)} />
+                        value={cvv} onChange={e => handleCvv(e.target.value)} />
                     </div>
                   </div>
                 </>
