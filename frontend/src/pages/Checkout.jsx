@@ -14,47 +14,47 @@ const fmt = (v) => 'R$ ' + Number(v).toFixed(2).replace('.', ',')
 // ── Etapas do checkout ──
 const ETAPAS = [
   { id: 1, label: 'Dados Pessoais', icon: '👤' },
-  { id: 2, label: 'Endereço',       icon: '📍' },
-  { id: 3, label: 'Pagamento',      icon: '💳' },
-  { id: 4, label: 'Resumo',         icon: '📋' },
+  { id: 2, label: 'Endereço', icon: '📍' },
+  { id: 3, label: 'Pagamento', icon: '💳' },
+  { id: 4, label: 'Resumo', icon: '📋' },
 ]
 
 const FORMAS_PAGAMENTO = [
   { id: 'credito', label: 'Cartão de Crédito', icon: '💳' },
-  { id: 'debito',  label: 'Cartão de Débito',  icon: '🏧' },
-  { id: 'pix',     label: 'Pix',               icon: '⚡' },
-  { id: 'boleto',  label: 'Boleto',            icon: '📄' },
+  { id: 'debito', label: 'Cartão de Débito', icon: '🏧' },
+  { id: 'pix', label: 'Pix', icon: '⚡' },
+  { id: 'boleto', label: 'Boleto', icon: '📄' },
 ]
 
 export default function Checkout({ showToast }) {
-  const navigate    = useNavigate()
-  const dispatch    = useDispatch()
-  const itens       = useSelector(s => s.carrinho.itens)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const itens = useSelector(s => s.carrinho.itens)
   const currentUser = useSelector(s => s.auth.currentUser)
 
   // ── Etapa atual ──
   const [etapa, setEtapa] = useState(1)
 
   // ── Dados pessoais ──
-  const [nome,  setNome]  = useState(currentUser?.name  || '')
+  const [nome, setNome] = useState(currentUser?.name || '')
   const [email, setEmail] = useState(currentUser?.email || '')
-  const [tel,   setTel]   = useState('')
+  const [tel, setTel] = useState('')
 
   // ── Endereço ──
-  const [cep,         setCep]         = useState('')
-  const [rua,         setRua]         = useState('')
-  const [numero,      setNumero]      = useState('')
+  const [cep, setCep] = useState('')
+  const [rua, setRua] = useState('')
+  const [numero, setNumero] = useState('')
   const [complemento, setComplemento] = useState('')
-  const [bairro,      setBairro]      = useState('')
-  const [cidade,      setCidade]      = useState('')
-  const [estado,      setEstado]      = useState('')
+  const [bairro, setBairro] = useState('')
+  const [cidade, setCidade] = useState('')
+  const [estado, setEstado] = useState('')
 
   // ── Pagamento ──
-  const [formaPag,  setFormaPag]  = useState('credito')
+  const [formaPag, setFormaPag] = useState('credito')
   const [nomCartao, setNomCartao] = useState('')
   const [numCartao, setNumCartao] = useState('')
-  const [validade,  setValidade]  = useState('')
-  const [cvv,       setCvv]       = useState('')
+  const [validade, setValidade] = useState('')
+  const [cvv, setCvv] = useState('')
 
   // ── Totais ──
   const total = useMemo(() =>
@@ -65,13 +65,13 @@ export default function Checkout({ showToast }) {
   // ── Validação por etapa ──
   const validarEtapa = () => {
     if (etapa === 1) {
-      if (!nome.trim())  { showToast('Informe seu nome.', 'error');     return false }
-      if (!email.trim()) { showToast('Informe seu e-mail.', 'error');   return false }
-      if (!tel.trim())   { showToast('Informe seu telefone.', 'error'); return false }
+      if (!nome.trim()) { showToast('Informe seu nome.', 'error'); return false }
+      if (!email.trim()) { showToast('Informe seu e-mail.', 'error'); return false }
+      if (!tel.trim()) { showToast('Informe seu telefone.', 'error'); return false }
     }
     if (etapa === 2) {
-      if (!cep.trim())    { showToast('Informe o CEP.', 'error');    return false }
-      if (!rua.trim())    { showToast('Informe a rua.', 'error');    return false }
+      if (!cep.trim()) { showToast('Informe o CEP.', 'error'); return false }
+      if (!rua.trim()) { showToast('Informe a rua.', 'error'); return false }
       if (!numero.trim()) { showToast('Informe o número.', 'error'); return false }
       if (!cidade.trim()) { showToast('Informe a cidade.', 'error'); return false }
       if (!estado.trim()) { showToast('Informe o estado.', 'error'); return false }
@@ -95,15 +95,15 @@ export default function Checkout({ showToast }) {
   const finalizarPedido = async () => {
     if (currentUser) {
       await dispatch(addCompra({
-        donoId:   currentUser.id,
+        donoId: currentUser.id,
         donoNome: currentUser.name,
         itens: itens.map(i => ({
-          nome:  i.name || i.nome,
-          qtd:   i.qtd,
+          nome: i.name || i.nome,
+          qtd: i.qtd,
           preco: i.price || i.preco || 0,
         })),
         total,
-        data:   new Date().toISOString().split('T')[0],
+        data: new Date().toISOString().split('T')[0],
         status: 'entregue',
       }))
     }
@@ -212,10 +212,10 @@ export default function Checkout({ showToast }) {
                   <label>Estado <span>*</span></label>
                   <select className="fc" value={estado} onChange={e => setEstado(e.target.value)}>
                     <option value="">Selecione</option>
-                    {['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG',
-                      'PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'].map(uf => (
-                      <option key={uf}>{uf}</option>
-                    ))}
+                    {['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG',
+                      'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'].map(uf => (
+                        <option key={uf}>{uf}</option>
+                      ))}
                   </select>
                 </div>
               </div>
@@ -343,7 +343,7 @@ export default function Checkout({ showToast }) {
 
         {/* ── Coluna lateral: resumo do carrinho ── */}
         <div className="checkout-summary-col">
-          <div className="dash-card" style={{ position: 'sticky', top: '120px' }}>
+          <div className="dash-card">
             <div className="dash-card-header">
               <h3>Seu Carrinho</h3>
               <span className="muted" style={{ fontSize: '.8rem' }}>

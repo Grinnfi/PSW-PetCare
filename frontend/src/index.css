@@ -1188,6 +1188,7 @@ header {
   background: #fff;
   border-radius: var(--r);
   box-shadow: var(--shadow);
+  padding: 32px;
   border: 1px solid var(--border);
   overflow: hidden;
 }
@@ -1196,7 +1197,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 22px 14px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -2827,16 +2828,15 @@ td {
 /* CHECKOUT */
 .checkout-body {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: 2fr 1fr;
   gap: 28px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .checkout-steps {
   display: flex;
   align-items: center;
   margin-bottom: 28px;
-  overflow-x: auto;
   padding-bottom: 4px;
 }
 
@@ -2844,6 +2844,10 @@ td {
   display: flex;
   align-items: center;
   flex: 1;
+}
+
+.checkout-step-wrap:last-child {
+  flex: none;
 }
 
 .checkout-step {
@@ -3081,6 +3085,16 @@ td {
 .checkout-side-preco {
   font-weight: 700;
   color: var(--p);
+}
+
+.checkout-summary-col .dash-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.checkout-summary-col .checkout-divider {
+  margin-top: auto;
 }
 
 /* ═══════════════════════════════════════════
