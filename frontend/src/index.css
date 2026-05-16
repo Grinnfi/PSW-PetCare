@@ -792,23 +792,17 @@ header {
   align-items: center;
   gap: 12px;
   padding: 16px 24px;
-  cursor: pointer;
   transition: background .15s;
-  border-right: 1px solid var(--border);
+  justify-content: center;
 }
 
-.feat-item:last-child {
-  border-right: none;
-}
-
-.feat-item:nth-child(2),
-.feat-item:nth-child(4) {
+.feat-item:nth-child(even) {
   background: var(--p);
 }
 
-.feat-item:nth-child(2):hover,
-.feat-item:nth-child(4):hover {
-  background: var(--p-dark);
+.feat-item:nth-child(even) .feat-text h4,
+.feat-item:nth-child(even) .feat-text p {
+  color: #fff;
 }
 
 .feat-icon {
@@ -825,18 +819,6 @@ header {
   font-size: .72rem;
   color: var(--muted);
   margin-top: 1px;
-}
-
-.feat-item:nth-child(2) .feat-text h4,
-.feat-item:nth-child(4) .feat-text h4,
-.feat-item:nth-child(2) .feat-text p,
-.feat-item:nth-child(4) .feat-text p {
-  color: #fff;
-}
-
-.feat-item:nth-child(2) .feat-text p,
-.feat-item:nth-child(4) .feat-text p {
-  opacity: .8;
 }
 
 .home-section {
@@ -950,11 +932,20 @@ header {
   align-items: center;
   justify-content: center;
   font-size: 3.5rem;
-  transition: transform .3s;
+  overflow: hidden;
+  position: relative;
 }
 
-.prod-card:hover .prod-img {
-  transform: scale(1.05);
+.prod-media {
+  display: inline-block;
+  transition: transform .3s ease;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.prod-card:hover .prod-media {
+  transform: scale(1.1);
 }
 
 .prod-info {
@@ -1915,6 +1906,7 @@ td {
   justify-content: center;
   transition: all .15s;
   line-height: 1;
+  padding-bottom: 6px;
 }
 
 .qty-btn:hover {
@@ -2899,6 +2891,7 @@ td {
   justify-content: center;
   font-size: 1.1rem;
   transition: all .2s;
+  padding-bottom: 4px;
 }
 
 .checkout-step.active .step-circle {

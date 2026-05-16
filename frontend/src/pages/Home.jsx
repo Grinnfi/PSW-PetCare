@@ -128,7 +128,9 @@ export default function Home({ addToCart, currentUser, showToast }) {
         <div className="products-grid">
           {PRODUTOS_DESTAQUE.map(prod => (
             <div key={prod.id} className="prod-card">
-              <div className="prod-img">{prod.emoji}</div>
+              <div className="prod-img">
+              <span className="prod-media">{prod.emoji}</span>
+            </div>
               <div className="prod-info">
                 <div className="prod-name">{prod.nome}</div>
                 <div className="prod-old">{prod.precoAntigo}</div>

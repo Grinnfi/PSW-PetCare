@@ -64,14 +64,16 @@ export default function Loja({ addToCart }) {
 
   return (
     <div id="page-loja" className="page">
-      <div className="page-htitle" style={{ marginBottom: '24px' }}>
+      <div className="page-htitle">
         <h1>{categoriaFiltro ? `Loja PetCare — ${categoriaFiltro}` : 'Loja PetCare'}</h1>
         <p>Produtos selecionados para o seu pet.</p>
       </div>
-      <div className="products-grid" style={{ gridTemplateColumns: 'repeat(4,1fr)' }}>
+      <div className="products-grid">
         {produtosFiltrados.map(prod => (
           <div key={prod.id} className="prod-card">
-            <div className="prod-img">{prod.emoji}</div>
+            <div className="prod-img">
+              <span className="prod-media">{prod.emoji}</span>
+            </div>
             <div className="prod-info">
               <div className="prod-name">{prod.nome}</div>
               <div className="prod-old">{prod.precoAntigo}</div>
