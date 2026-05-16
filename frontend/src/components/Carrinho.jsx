@@ -5,7 +5,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { removeItem, updateQtd, limparCarrinho } from '../store/carrinhoSlice'
+import { removeItem, updateQtd, limparCarrinho, setCupom, removerCupom as delCupom } from '../store/carrinhoSlice'
 
 const CUPONS = {
   'PETCARE10': 0.10,
@@ -18,8 +18,8 @@ export default function Carrinho({ isOpen, onClose, showToast }) {
   const dispatch  = useDispatch()
   const itens     = useSelector(s => s.carrinho.itens)
 
-  const [cupomInput,    setCupomInput]    = useState('')
-  const [cupomAplicado, setCupomAplicado] = useState(null)
+  const [cupomInput, setCupomInput] = useState('')
+  const cupomAplicado = useSelector(s => s.carrinho.cupom)
 
   const alterarQtd = (id, delta) => {
     const item = itens.find(i => i.id === id)
@@ -40,13 +40,13 @@ export default function Carrinho({ isOpen, onClose, showToast }) {
     if (cupomAplicado) { showToast('Já existe um cupom aplicado.', 'error'); return }
     const pct = CUPONS[codigo]
     if (!pct) { showToast(`Cupom "${codigo}" inválido.`, 'error'); return }
-    setCupomAplicado({ codigo, pct })
+    dispatch(setCupom({ codigo, pct }))
     setCupomInput('')
     showToast(`Cupom "${codigo}" aplicado! ${pct * 100}% de desconto 🎉`, 'success')
   }
 
   const removerCupom = () => {
-    setCupomAplicado(null)
+    dispatch(delCupom())
     showToast('Cupom removido.', 'error')
   }
 

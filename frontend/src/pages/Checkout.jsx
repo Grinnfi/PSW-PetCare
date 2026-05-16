@@ -30,6 +30,7 @@ export default function Checkout({ showToast }) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const itens = useSelector(s => s.carrinho.itens)
+  const cupom = useSelector(s => s.carrinho.cupom)
   const currentUser = useSelector(s => s.auth.currentUser)
 
   // ── Etapa atual ──
@@ -57,10 +58,11 @@ export default function Checkout({ showToast }) {
   const [cvv, setCvv] = useState('')
 
   // ── Totais ──
-  const total = useMemo(() =>
-    itens.reduce((acc, item) => acc + (item.price || item.preco || 0) * item.qtd, 0),
-    [itens]
-  )
+  const { subtotal, desconto, total } = useMemo(() => {
+    const sub = itens.reduce((acc, item) => acc + (item.price || item.preco || 0) * item.qtd, 0)
+    const desc = cupom ? sub * cupom.pct : 0
+    return { subtotal: sub, desconto: desc, total: sub - desc }
+  }, [itens, cupom])
 
   // ── Validação por etapa ──
   const validarEtapa = () => {
@@ -302,6 +304,24 @@ export default function Checkout({ showToast }) {
               </div>
 
               <div className="checkout-divider" />
+              <div className="cart-summary" style={{ marginBottom: '24px' }}>
+                <div className="cart-summary-row">
+                  <span>Subtotal</span>
+                  <span>{fmt(subtotal)}</span>
+                </div>
+                {cupom && (
+                  <div className="cart-summary-row discount">
+                    <span>Desconto ({cupom.pct * 100}%)</span>
+                    <span>− {fmt(desconto)}</span>
+                  </div>
+                )}
+                <div className="cart-summary-row total">
+                  <span>Total</span>
+                  <span>{fmt(total)}</span>
+                </div>
+              </div>
+
+              <div className="checkout-divider" />
 
               <div className="checkout-confirm-grid">
                 <div className="confirm-block">
@@ -364,6 +384,16 @@ export default function Checkout({ showToast }) {
             </div>
             <div className="checkout-divider" />
             <div className="cart-summary">
+              <div className="cart-summary-row">
+                <span>Subtotal</span>
+                <span>{fmt(subtotal)}</span>
+              </div>
+              {cupom && (
+                <div className="cart-summary-row discount">
+                  <span>Desconto ({cupom.pct * 100}%)</span>
+                  <span>− {fmt(desconto)}</span>
+                </div>
+              )}
               <div className="cart-summary-row total">
                 <span>Total</span>
                 <span>{fmt(total)}</span>
