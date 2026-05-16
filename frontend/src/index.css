@@ -2904,14 +2904,42 @@ td {
 .checkout-step.active .step-circle {
   border-color: var(--p);
   background: var(--p-light);
-  box-shadow: 0 0 0 4px rgba(108, 62, 245, .12);
+  box-shadow: 0 0 0 4px rgba(108, 62, 245, .15);
 }
 
 .checkout-step.done .step-circle {
   border-color: var(--green);
   background: var(--green-bg);
   color: var(--green);
-  font-weight: 800;
+}
+
+.checkout-step.current .step-circle {
+  background: #fff;
+  border-width: 3px;
+}
+
+.checkout-step.done .step-label {
+  color: var(--green);
+}
+
+.checkout-step.clickable {
+  cursor: pointer;
+}
+
+.checkout-step.clickable:hover .step-circle,
+.checkout-step.pulse .step-circle {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(108, 62, 245, .3);
+}
+
+.checkout-step.locked {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.checkout-step.locked .step-circle {
+  background: var(--border);
+  border-style: dashed;
 }
 
 .step-label {
@@ -2919,6 +2947,11 @@ td {
   font-weight: 700;
   color: var(--muted);
   white-space: nowrap;
+}
+
+.checkout-step.current .step-label {
+  color: var(--text);
+  font-weight: 800;
 }
 
 .checkout-step.active .step-label {
@@ -2936,6 +2969,10 @@ td {
   margin: 0 8px;
   margin-bottom: 22px;
   transition: background .2s;
+}
+
+.step-line.current {
+  background: linear-gradient(90deg, var(--green) 50%, var(--p) 100%);
 }
 
 .step-line.done {

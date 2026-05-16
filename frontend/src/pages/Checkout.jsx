@@ -36,6 +36,8 @@ export default function Checkout({ showToast }) {
 
   // ── Etapa atual ──
   const [etapa, setEtapa] = useState(1)
+  const [maxEtapa, setMaxEtapa] = useState(1)
+  const [pulse, setPulse] = useState(false)
 
   // ── Dados pessoais ──
   const [nome, setNome] = useState(currentUser?.name || '')
@@ -122,14 +124,14 @@ export default function Checkout({ showToast }) {
     if (etapa === 3) {
       if (formaPag === 'credito' || formaPag === 'debito') {
         if (!nomCartao.trim()) { showToast('Informe o nome no cartão.', 'error'); return false }
-        if (!numCartao.trim() || numCartao.replace(/\D/g, '').length < 16) { 
-          showToast('Informe um número de cartão válido.', 'error'); return false 
+        if (!numCartao.trim() || numCartao.replace(/\D/g, '').length < 16) {
+          showToast('Informe um número de cartão válido.', 'error'); return false
         }
-        if (!validade.trim() || validade.length < 5) { 
-          showToast('Informe a validade (MM/AA).', 'error'); return false 
+        if (!validade.trim() || validade.length < 5) {
+          showToast('Informe a validade (MM/AA).', 'error'); return false
         }
-        if (!cvv.trim() || cvv.length < 3) { 
-          showToast('Informe o CVV.', 'error'); return false 
+        if (!cvv.trim() || cvv.length < 3) {
+          showToast('Informe o CVV.', 'error'); return false
         }
       }
     }
@@ -138,7 +140,18 @@ export default function Checkout({ showToast }) {
 
   const avancar = () => {
     if (!validarEtapa()) return
-    setEtapa(e => e + 1)
+    const prox = etapa + 1
+    setEtapa(prox)
+    if (prox > maxEtapa) setMaxEtapa(prox)
+  }
+
+  const pularParaEtapa = (id) => {
+    if (id <= maxEtapa) {
+      setEtapa(id)
+    } else {
+      setPulse(true)
+      setTimeout(() => setPulse(false), 400)
+    }
   }
 
   const voltar = () => setEtapa(e => e - 1)
@@ -178,14 +191,23 @@ export default function Checkout({ showToast }) {
       <div className="checkout-steps">
         {ETAPAS.map((e, i) => (
           <div key={e.id} className="checkout-step-wrap">
-            <div className={`checkout-step ${etapa === e.id ? 'active' : ''} ${etapa > e.id ? 'done' : ''}`}>
+            <div
+              className={`checkout-step 
+                ${e.id === maxEtapa ? 'active' : ''} 
+                ${e.id < maxEtapa ? 'done' : ''} 
+                ${e.id === etapa ? 'current' : ''} 
+                ${e.id === maxEtapa && pulse ? 'pulse' : ''}
+                ${e.id <= maxEtapa ? 'clickable' : 'locked'}`}
+              onClick={() => pularParaEtapa(e.id)}
+            >
               <div className="step-circle">
-                {etapa > e.id ? '✓' : e.icon}
+                {e.icon}
               </div>
               <span className="step-label">{e.label}</span>
             </div>
             {i < ETAPAS.length - 1 && (
-              <div className={`step-line ${etapa > e.id ? 'done' : ''}`} />
+              <div className={`step-line ${e.id === maxEtapa - 1 ? 'current' :
+                  e.id < maxEtapa ? 'done' : ''}`} />
             )}
           </div>
         ))}
