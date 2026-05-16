@@ -120,8 +120,17 @@ export default function Checkout({ showToast }) {
       if (!estado.trim()) { showToast('Informe o estado.', 'error'); return false }
     }
     if (etapa === 3) {
-      if ((formaPag === 'credito' || formaPag === 'debito') && !nomCartao.trim()) {
-        showToast('Informe o nome no cartão.', 'error'); return false
+      if (formaPag === 'credito' || formaPag === 'debito') {
+        if (!nomCartao.trim()) { showToast('Informe o nome no cartão.', 'error'); return false }
+        if (!numCartao.trim() || numCartao.replace(/\D/g, '').length < 16) { 
+          showToast('Informe um número de cartão válido.', 'error'); return false 
+        }
+        if (!validade.trim() || validade.length < 5) { 
+          showToast('Informe a validade (MM/AA).', 'error'); return false 
+        }
+        if (!cvv.trim() || cvv.length < 3) { 
+          showToast('Informe o CVV.', 'error'); return false 
+        }
       }
     }
     return true
@@ -300,18 +309,18 @@ export default function Checkout({ showToast }) {
                       value={nomCartao} onChange={e => handleNomCartao(e.target.value)} />
                   </div>
                   <div className="fg">
-                    <label>Número do cartão</label>
+                    <label>Número do cartão <span>*</span></label>
                     <input className="fc" type="text" placeholder="0000 0000 0000 0000"
                       value={numCartao} onChange={e => handleNumCartao(e.target.value)} />
                   </div>
                   <div className="fg fg-row2">
                     <div>
-                      <label>Validade</label>
+                      <label>Validade <span>*</span></label>
                       <input className="fc" type="text" placeholder="MM/AA"
                         value={validade} onChange={e => handleValidade(e.target.value)} />
                     </div>
                     <div>
-                      <label>CVV</label>
+                      <label>CVV <span>*</span></label>
                       <input className="fc" type="text" placeholder="000"
                         value={cvv} onChange={e => handleCvv(e.target.value)} />
                     </div>
