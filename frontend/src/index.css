@@ -2798,6 +2798,36 @@ td {
   opacity: .85;
 }
 
+.cep-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cep-btn {
+  padding: 10px 14px;
+  background: var(--p-light);
+  color: var(--p);
+  border: 1px solid var(--p-light);
+  border-radius: var(--r-sm);
+  font-size: .75rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .2s;
+}
+
+.cep-btn:hover {
+  background: var(--p);
+  color: #fff;
+  border-color: var(--p);
+}
+
+.cep-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
 .coupon-applied {
   display: flex;
   align-items: center;

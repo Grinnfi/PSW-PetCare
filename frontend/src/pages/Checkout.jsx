@@ -57,6 +57,7 @@ export default function Checkout({ showToast }) {
   const [numCartao, setNumCartao] = useState('')
   const [validade, setValidade] = useState('')
   const [cvv, setCvv] = useState('')
+  const [loadingCep, setLoadingCep] = useState(false)
 
   // ── Handlers com Máscaras ──
   const handleNome = (v) => setNome(masks.maskOnlyLetters(v))
@@ -68,6 +69,34 @@ export default function Checkout({ showToast }) {
   const handleNumCartao = (v) => setNumCartao(masks.maskCardNumber(v))
   const handleValidade = (v) => setValidade(masks.maskCardExpiry(v))
   const handleCvv = (v) => setCvv(masks.maskCVV(v))
+
+  const buscarCep = async () => {
+    const cleanCep = cep.replace(/\D/g, '')
+    if (cleanCep.length !== 8) {
+      showToast('CEP inválido. Deve ter 8 dígitos.', 'error')
+      return
+    }
+
+    setLoadingCep(true)
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
+      const data = await res.json()
+
+      if (data.erro) {
+        showToast('CEP não encontrado.', 'error')
+      } else {
+        setRua(data.logradouro)
+        setBairro(data.bairro)
+        setCidade(data.localidade)
+        setEstado(data.uf)
+        showToast('Endereço preenchido com sucesso!', 'success')
+      }
+    } catch (err) {
+      showToast('Erro ao buscar o CEP. Tente novamente.', 'error')
+    } finally {
+      setLoadingCep(false)
+    }
+  }
 
   // ── Totais ──
   const { subtotal, desconto, total } = useMemo(() => {
@@ -190,8 +219,18 @@ export default function Checkout({ showToast }) {
               <div className="fg fg-row2">
                 <div>
                   <label>CEP <span>*</span></label>
-                  <input className="fc" type="text" placeholder="00000-000"
-                    value={cep} onChange={e => handleCep(e.target.value)} />
+                  <div className="cep-wrap">
+                    <input className="fc" type="text" placeholder="00000-000"
+                      value={cep} onChange={e => handleCep(e.target.value)} />
+                    <button
+                      className="cep-btn"
+                      type="button"
+                      onClick={buscarCep}
+                      disabled={loadingCep || cep.replace(/\D/g, '').length !== 8}
+                    >
+                      {loadingCep ? 'Buscando...' : 'Buscar CEP'}
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label>Número <span>*</span></label>
