@@ -12,8 +12,19 @@ O sistema foi pensado para facilitar a experiência do cliente, centralizando co
 
 ## 🚀 Tecnologias utilizadas
 
-* HTML, CSS, JavaScript
+### Frontend
+
 * React
+
+* Redux Toolkit
+
+* Vite
+
+### Backend
+
+* Node.js
+
+* Express
 
 
 ## 📦 Como executar o projeto localmente
@@ -71,19 +82,20 @@ http://localhost:3000
 
 ## 📌 Funcionalidades
 
-* Cadastro de usuários
-* Listagem de produtos
-* Compra de produtos
-* Agendamento de serviços
-* Interface amigável
+* Cadastro e login de usuários
+* Listagem e compra de produtos
+* Carrinho de produtos (banho, tosa, consulta, etc.)
+* Gerenciamento de pets
+* Painel administrativo com controle de estoque
+* Histórico de compras e agendamentos
 
 
 ## 👨‍💻 Integrantes do projeto
 
-Daniel Vitor Magalhães da Cunha
-João Matheus Ambrósio
-Juliana Souza Telles
-Ryan Filipe de Mendonça Borges
+* Daniel Vitor Magalhães da Cunha
+* João Matheus Ambrósio
+* Juliana Souza Telles
+* Ryan Filipe de Mendonça Borges
 
 
 
