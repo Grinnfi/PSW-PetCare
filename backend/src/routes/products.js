@@ -6,52 +6,68 @@
 // DELETE /products/:id  → remove produto
 // ══════════════════════════════════════════════
 import { Router } from 'express'
-import { db, nextId } from '../data/db.js'
+import { Product } from '../models/index.js'
 
 const router = Router()
 
 // GET /products
-router.get('/', (req, res) => {
-  res.json(db.products)
+router.get('/', async (req, res) => {
+  try {
+    const products = await Product.find()
+    res.json(products)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
 })
 
 // POST /products
-router.post('/', (req, res) => {
-  const { name, unit, cat, price, stock, desc, emoji = '' } = req.body
+router.post('/', async (req, res) => {
+  try {
+    const { name, unit, cat, price, stock, desc, emoji } = req.body
 
-  if (!name || !cat || price === undefined) {
-    return res.status(400).json({ error: 'name, cat e price são obrigatórios.' })
+    if (!name || !cat || price === undefined) {
+      return res.status(400).json({ error: 'name, cat e price são obrigatórios.' })
+    }
+
+    const novoProduto = await Product.create({ name, unit, cat, price, stock, desc, emoji })
+    res.status(201).json(novoProduto)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
   }
-
-  const novoProduto = { id: nextId(db.products), name, unit, cat, price, stock, desc, emoji }
-  db.products.push(novoProduto)
-  res.status(201).json(novoProduto)
 })
 
 // PUT /products/:id
-router.put('/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const index = db.products.findIndex(p => p.id === id)
+router.put('/:id', async (req, res) => {
+  try {
+    const produto = await Product.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    )
 
-  if (index === -1) {
-    return res.status(404).json({ error: 'Produto não encontrado.' })
+    if (!produto) {
+      return res.status(404).json({ error: 'Produto não encontrado.' })
+    }
+
+    res.json(produto)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
   }
-
-  db.products[index] = { ...db.products[index], ...req.body, id }
-  res.json(db.products[index])
 })
 
 // DELETE /products/:id
-router.delete('/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const index = db.products.findIndex(p => p.id === id)
+router.delete('/:id', async (req, res) => {
+  try {
+    const produto = await Product.findByIdAndDelete(req.params.id)
 
-  if (index === -1) {
-    return res.status(404).json({ error: 'Produto não encontrado.' })
+    if (!produto) {
+      return res.status(404).json({ error: 'Produto não encontrado.' })
+    }
+
+    res.json({ message: 'Produto removido com sucesso.' })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
   }
-
-  db.products.splice(index, 1)
-  res.status(200).json({ message: 'Produto removido com sucesso.' })
 })
 
 export default router

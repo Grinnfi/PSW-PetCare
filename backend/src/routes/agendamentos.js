@@ -1,43 +1,57 @@
 // ══════════════════════════════════════════════
 // routes/agendamentos.js
-// GET   /agendamentos        → lista todos
-// POST  /agendamentos        → cria novo
-// PATCH /agendamentos/:id    → atualiza status
+// GET   /agendamentos      → lista todos
+// POST  /agendamentos      → cria novo
+// PATCH /agendamentos/:id  → atualiza status
 // ══════════════════════════════════════════════
 import { Router } from 'express'
-import { db, nextId } from '../data/db.js'
+import { Agendamento } from '../models/index.js'
 
 const router = Router()
 
 // GET /agendamentos
-router.get('/', (req, res) => {
-  res.json(db.agendamentos)
+router.get('/', async (req, res) => {
+  try {
+    const agendamentos = await Agendamento.find().sort({ data: 1, hora: 1 })
+    res.json(agendamentos)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
 })
 
 // POST /agendamentos
-router.post('/', (req, res) => {
-  const { petId, petNome, petEspecie, donoId, donoNome, servico, data, hora, status = 'pendente' } = req.body
+router.post('/', async (req, res) => {
+  try {
+    const { petId, petNome, petEspecie, donoId, donoNome, servico, data, hora, status } = req.body
 
-  if (!petId || !donoId || !servico || !data || !hora) {
-    return res.status(400).json({ error: 'petId, donoId, servico, data e hora são obrigatórios.' })
+    if (!petId || !donoId || !servico || !data || !hora) {
+      return res.status(400).json({ error: 'petId, donoId, servico, data e hora são obrigatórios.' })
+    }
+
+    const novo = await Agendamento.create({ petId, petNome, petEspecie, donoId, donoNome, servico, data, hora, status })
+    res.status(201).json(novo)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
   }
-
-  const novo = { id: nextId(db.agendamentos), petId, petNome, petEspecie, donoId, donoNome, servico, data, hora, status }
-  db.agendamentos.push(novo)
-  res.status(201).json(novo)
 })
 
-// PATCH /agendamentos/:id  (ex: cancelar)
-router.patch('/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const index = db.agendamentos.findIndex(a => a.id === id)
+// PATCH /agendamentos/:id
+router.patch('/:id', async (req, res) => {
+  try {
+    const agendamento = await Agendamento.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }  // retorna o documento já atualizado
+    )
 
-  if (index === -1) {
-    return res.status(404).json({ error: 'Agendamento não encontrado.' })
+    if (!agendamento) {
+      return res.status(404).json({ error: 'Agendamento não encontrado.' })
+    }
+
+    res.json(agendamento)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
   }
-
-  db.agendamentos[index] = { ...db.agendamentos[index], ...req.body }
-  res.json(db.agendamentos[index])
 })
 
 export default router

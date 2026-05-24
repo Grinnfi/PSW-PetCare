@@ -5,39 +5,49 @@
 // DELETE /pets/:id  → remove um pet
 // ══════════════════════════════════════════════
 import { Router } from 'express'
-import { db, nextId } from '../data/db.js'
+import { Pet } from '../models/index.js'
 
 const router = Router()
 
 // GET /pets
-router.get('/', (req, res) => {
-  res.json(db.pets)
+router.get('/', async (req, res) => {
+  try {
+    const pets = await Pet.find()
+    res.json(pets)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
 })
 
 // POST /pets
-router.post('/', (req, res) => {
-  const { name, especie, raca, sexo, idade, donoId, donoNome, obs = '' } = req.body
+router.post('/', async (req, res) => {
+  try {
+    const { name, especie, raca, sexo, idade, donoId, donoNome, obs } = req.body
 
-  if (!name || !especie || !donoId) {
-    return res.status(400).json({ error: 'name, especie e donoId são obrigatórios.' })
+    if (!name || !especie || !donoId) {
+      return res.status(400).json({ error: 'name, especie e donoId são obrigatórios.' })
+    }
+
+    const novoPet = await Pet.create({ name, especie, raca, sexo, idade, donoId, donoNome, obs })
+    res.status(201).json(novoPet)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
   }
-
-  const novoPet = { id: nextId(db.pets), name, especie, raca, sexo, idade, donoId, donoNome, obs }
-  db.pets.push(novoPet)
-  res.status(201).json(novoPet)
 })
 
 // DELETE /pets/:id
-router.delete('/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const index = db.pets.findIndex(p => p.id === id)
+router.delete('/:id', async (req, res) => {
+  try {
+    const pet = await Pet.findByIdAndDelete(req.params.id)
 
-  if (index === -1) {
-    return res.status(404).json({ error: 'Pet não encontrado.' })
+    if (!pet) {
+      return res.status(404).json({ error: 'Pet não encontrado.' })
+    }
+
+    res.json({ message: 'Pet removido com sucesso.' })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
   }
-
-  db.pets.splice(index, 1)
-  res.status(200).json({ message: 'Pet removido com sucesso.' })
 })
 
 export default router
