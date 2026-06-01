@@ -5,7 +5,7 @@
 
 import { useState } from 'react'
 
-export default function LoginDropdown({ isOpen, onClose, users, onLogin, onRegister }) {
+export default function LoginDropdown({ isOpen, onClose, onLogin, onRegister }) {
   // Aba ativa: 'login' ou 'register'
   const [tab, setTab] = useState('login')
 
@@ -25,20 +25,18 @@ export default function LoginDropdown({ isOpen, onClose, users, onLogin, onRegis
   const [regMsg, setRegMsg]     = useState({ text: '', type: '' })
 
   // ── Ação: Fazer Login ──
-  const handleLogin = () => {
-    if (!loginEmail || !loginPwd) {
-      setLoginMsg({ text: 'Preencha todos os campos.', type: 'error' })
-      return
-    }
-    const user = users.find(u => u.email === loginEmail && u.password === loginPwd)
-    if (!user) {
-      setLoginMsg({ text: 'E-mail ou senha incorretos.', type: 'error' })
-      return
-    }
-    // Reseta o formulário após login bem-sucedido
-    setLoginEmail(''); setLoginPwd(''); setLoginMsg({ text: '', type: '' })
-    onLogin(user)
+  const handleLogin = async () => {
+  if (!loginEmail || !loginPwd) {
+    setLoginMsg({ text: 'Preencha todos os campos.', type: 'error' })
+    return
   }
+  const result = await onLogin({ email: loginEmail, password: loginPwd })
+  if (result?.meta?.requestStatus === 'fulfilled') {
+    setLoginEmail(''); setLoginPwd(''); setLoginMsg({ text: '', type: '' })
+  } else {
+    setLoginMsg({ text: 'E-mail ou senha incorretos.', type: 'error' })
+  }
+}
 
   // ── Ação: Cadastrar conta ──
   const handleRegister = () => {

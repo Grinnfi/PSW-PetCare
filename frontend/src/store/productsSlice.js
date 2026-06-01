@@ -1,6 +1,3 @@
-// ══════════════════════════════════════════════
-// productsSlice.js — Estado de produtos/estoque (Redux)
-// ══════════════════════════════════════════════
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 const API = 'http://localhost:3001'
@@ -20,7 +17,7 @@ export const addProduct = createAsyncThunk('products/add', async (product) => {
 })
 
 export const updateProduct = createAsyncThunk('products/update', async (product) => {
-  const res = await fetch(`${API}/products/${product.id}`, {
+  const res = await fetch(`${API}/products/${product._id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(product),
@@ -49,11 +46,11 @@ const productsSlice = createSlice({
         state.list.push(action.payload)
       })
       .addCase(updateProduct.fulfilled, (state, action) => {
-        const idx = state.list.findIndex(p => p.id === action.payload.id)
+        const idx = state.list.findIndex(p => p._id === action.payload._id)
         if (idx !== -1) state.list[idx] = action.payload
       })
       .addCase(deleteProduct.fulfilled, (state, action) => {
-        state.list = state.list.filter(p => p.id !== action.payload)
+        state.list = state.list.filter(p => p._id !== action.payload)
       })
   },
 })

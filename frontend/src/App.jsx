@@ -18,7 +18,7 @@ import Historico    from './pages/Historico'
 import Loja         from './pages/Loja'
 import Estoque      from './pages/Estoque'
 
-import { fetchUsers, login, logout, registerUser } from './store/authSlice'
+import { fetchUsers, loginUser, logout, registerUser } from './store/authSlice'
 import { fetchPets }          from './store/petsSlice'
 import { fetchAgendamentos }  from './store/agendamentosSlice'
 import { fetchCompras }       from './store/comprasSlice'
@@ -58,11 +58,15 @@ function AppContent() {
   }, [dispatch])
 
   // ── Login ──
-  const handleLogin = useCallback((user) => {
-    dispatch(login(user))
-    showToast(`Bem-vindo, ${user.name}!`, 'success')
+  const handleLogin = useCallback(async (credenciais) => {
+  const result = await dispatch(loginUser(credenciais))
+  if (result.meta.requestStatus === 'fulfilled') {
+    showToast(`Bem-vindo, ${result.payload.name}!`, 'success')
     navigate('/dashboard')
-  }, [dispatch, showToast, navigate])
+  } else {
+    showToast(result.payload || 'Email ou senha inválidos.', 'error')
+  }
+}, [dispatch, showToast, navigate])
 
   // ── Logout ──
   const handleLogout = useCallback(() => {

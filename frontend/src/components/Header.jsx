@@ -116,7 +116,6 @@ export default function Header({ currentUser, cartCount, users, onLogin, onLogou
                 <LoginDropdown
                   isOpen={loginOpen}
                   onClose={() => setLoginOpen(false)}
-                  users={users}
                   onLogin={onLogin}
                   onRegister={onRegister}
                 />
