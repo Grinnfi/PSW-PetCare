@@ -1,16 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { authHeader } from '../utils/api.js'
 
 const API = 'http://localhost:3001'
 
 export const fetchProducts = createAsyncThunk('products/fetchAll', async () => {
-  const res = await fetch(`${API}/products`)
+  const res = await fetch(`${API}/products`)  // público, sem token
   return res.json()
 })
 
 export const addProduct = createAsyncThunk('products/add', async (product) => {
   const res = await fetch(`${API}/products`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeader() },
     body: JSON.stringify(product),
   })
   return res.json()
@@ -19,14 +20,17 @@ export const addProduct = createAsyncThunk('products/add', async (product) => {
 export const updateProduct = createAsyncThunk('products/update', async (product) => {
   const res = await fetch(`${API}/products/${product._id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeader() },
     body: JSON.stringify(product),
   })
   return res.json()
 })
 
 export const deleteProduct = createAsyncThunk('products/delete', async (id) => {
-  await fetch(`${API}/products/${id}`, { method: 'DELETE' })
+  await fetch(`${API}/products/${id}`, {
+    method: 'DELETE',
+    headers: { ...authHeader() },
+  })
   return id
 })
 

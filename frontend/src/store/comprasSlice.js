@@ -1,25 +1,18 @@
-// ══════════════════════════════════════════════
-// comprasSlice.js — Estado de compras (Redux)
-// ══════════════════════════════════════════════
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { authHeader } from '../utils/api.js'
 
 const API = 'http://localhost:3001'
 
-function atualizarStatusCompras(compras) {
-  // Compras sempre ficam "entregue" após 3 dias - simulação simples
-  return compras
-}
-
 export const fetchCompras = createAsyncThunk('compras/fetchAll', async () => {
-  const res = await fetch(`${API}/compras`)
-  const data = await res.json()
-  return atualizarStatusCompras(data)
+  const res = await fetch(`${API}/compras`, { headers: { ...authHeader() } })
+  if (!res.ok) return []
+  return res.json()
 })
 
 export const addCompra = createAsyncThunk('compras/add', async (compra) => {
   const res = await fetch(`${API}/compras`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeader() },
     body: JSON.stringify(compra),
   })
   return res.json()
@@ -28,19 +21,17 @@ export const addCompra = createAsyncThunk('compras/add', async (compra) => {
 const comprasSlice = createSlice({
   name: 'compras',
   initialState: { list: [], status: 'idle' },
-  reducers: {},
+  reducers: {
+    limpar(state) { state.list = []; state.status = 'idle' },
+  },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchCompras.pending, (state) => { state.status = 'loading' })
-      .addCase(fetchCompras.fulfilled, (state, action) => {
-        state.status = 'succeeded'
-        state.list = action.payload
-      })
-      .addCase(fetchCompras.rejected, (state) => { state.status = 'failed' })
-      .addCase(addCompra.fulfilled, (state, action) => {
-        state.list.push(action.payload)
-      })
+      .addCase(fetchCompras.pending,   (state) => { state.status = 'loading' })
+      .addCase(fetchCompras.fulfilled, (state, action) => { state.status = 'succeeded'; state.list = action.payload })
+      .addCase(fetchCompras.rejected,  (state) => { state.status = 'failed' })
+      .addCase(addCompra.fulfilled,    (state, action) => { state.list.push(action.payload) })
   },
 })
 
+export const { limpar: limparCompras } = comprasSlice.actions
 export default comprasSlice.reducer

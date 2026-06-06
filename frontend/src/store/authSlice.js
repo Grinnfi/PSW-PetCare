@@ -12,7 +12,8 @@ const usuarioSalvo = () => {
 }
 
 export const fetchUsers = createAsyncThunk('auth/fetchUsers', async () => {
-  const res = await fetch(`${API}/users`)
+  const { authHeader } = await import('../utils/api.js')
+  const res = await fetch(`${API}/users`, { headers: { ...authHeader() } })
   return res.json()
 })
 
@@ -35,7 +36,7 @@ export const loginUser = createAsyncThunk('auth/loginUser', async (credenciais, 
   })
   const data = await res.json()
   if (!res.ok) return rejectWithValue(data.error)
-  return data
+  return data  // já vem com o token dentro
 })
 
 const authSlice = createSlice({
@@ -58,14 +59,13 @@ const authSlice = createSlice({
         state.users = action.payload
       })
       .addCase(registerUser.fulfilled, (state, action) => {
-        state.users.push(action.payload)
         state.error = null
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.error = action.payload
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.currentUser = action.payload
+        state.currentUser = action.payload  // inclui o token
         state.error = null
         localStorage.setItem('petcare_user', JSON.stringify(action.payload))
       })

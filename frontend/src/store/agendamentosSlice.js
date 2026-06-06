@@ -1,11 +1,8 @@
-// ══════════════════════════════════════════════
-// agendamentosSlice.js — Estado de agendamentos (Redux)
-// ══════════════════════════════════════════════
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { authHeader } from '../utils/api.js'
 
 const API = 'http://localhost:3001'
 
-// Atualiza status de agendamentos passados para "concluido"
 function atualizarStatusAutomatico(agendamentos) {
   const agora = new Date()
   return agendamentos.map(ag => {
@@ -20,7 +17,8 @@ function atualizarStatusAutomatico(agendamentos) {
 }
 
 export const fetchAgendamentos = createAsyncThunk('agendamentos/fetchAll', async () => {
-  const res = await fetch(`${API}/agendamentos`)
+  const res = await fetch(`${API}/agendamentos`, { headers: { ...authHeader() } })
+  if (!res.ok) return []
   const data = await res.json()
   return atualizarStatusAutomatico(data)
 })
@@ -28,7 +26,7 @@ export const fetchAgendamentos = createAsyncThunk('agendamentos/fetchAll', async
 export const addAgendamento = createAsyncThunk('agendamentos/add', async (ag) => {
   const res = await fetch(`${API}/agendamentos`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeader() },
     body: JSON.stringify(ag),
   })
   return res.json()
@@ -37,7 +35,7 @@ export const addAgendamento = createAsyncThunk('agendamentos/add', async (ag) =>
 export const cancelarAgendamento = createAsyncThunk('agendamentos/cancelar', async (id) => {
   const res = await fetch(`${API}/agendamentos/${id}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeader() },
     body: JSON.stringify({ status: 'cancelado' }),
   })
   return res.json()
@@ -46,23 +44,21 @@ export const cancelarAgendamento = createAsyncThunk('agendamentos/cancelar', asy
 const agendamentosSlice = createSlice({
   name: 'agendamentos',
   initialState: { list: [], status: 'idle' },
-  reducers: {},
+  reducers: {
+    limpar(state) { state.list = []; state.status = 'idle' },
+  },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAgendamentos.pending, (state) => { state.status = 'loading' })
-      .addCase(fetchAgendamentos.fulfilled, (state, action) => {
-        state.status = 'succeeded'
-        state.list = action.payload
-      })
-      .addCase(fetchAgendamentos.rejected, (state) => { state.status = 'failed' })
-      .addCase(addAgendamento.fulfilled, (state, action) => {
-        state.list.push(action.payload)
-      })
-      .addCase(cancelarAgendamento.fulfilled, (state, action) => {
-        const idx = state.list.findIndex(a => a.id === action.payload.id)
+      .addCase(fetchAgendamentos.pending,    (state) => { state.status = 'loading' })
+      .addCase(fetchAgendamentos.fulfilled,  (state, action) => { state.status = 'succeeded'; state.list = action.payload })
+      .addCase(fetchAgendamentos.rejected,   (state) => { state.status = 'failed' })
+      .addCase(addAgendamento.fulfilled,     (state, action) => { state.list.push(action.payload) })
+      .addCase(cancelarAgendamento.fulfilled,(state, action) => {
+        const idx = state.list.findIndex(a => a._id === action.payload._id)
         if (idx !== -1) state.list[idx] = action.payload
       })
   },
 })
 
+export const { limpar: limparAgendamentos } = agendamentosSlice.actions
 export default agendamentosSlice.reducer
