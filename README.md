@@ -65,7 +65,7 @@ npm run dev
 ### 4. Executar o servidor
 
 ```bash
-npm run server
+npm run dev
 ```
 
 
