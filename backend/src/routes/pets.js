@@ -1,26 +1,25 @@
 // ══════════════════════════════════════════════
 // routes/pets.js
-// GET    /pets      → lista todos os pets
-// POST   /pets      → cadastra novo pet
-// DELETE /pets/:id  → remove um pet
+// GET    /pets      → autenticado (user: só seus; admin: todos)
+// POST   /pets      → autenticado
+// DELETE /pets/:id  → autenticado (dono ou admin)
 // ══════════════════════════════════════════════
 import { Router } from 'express'
 import { Pet } from '../models/index.js'
+import { autenticar } from '../middleware/auth.js'
 
 const router = Router()
-
-// GET /pets
-router.get('/', async (req, res) => {
+router.get('/', autenticar, async (req, res) => {
   try {
-    const pets = await Pet.find()
+    const filtro = req.user.role === 'admin' ? {} : { donoId: req.user._id }
+    const pets = await Pet.find(filtro)
     res.json(pets)
   } catch (err) {
     res.status(500).json({ error: err.message })
   }
 })
 
-// POST /pets
-router.post('/', async (req, res) => {
+router.post('/', autenticar, async (req, res) => {
   try {
     const { name, especie, raca, sexo, idade, donoId, donoNome, obs } = req.body
 
@@ -35,15 +34,20 @@ router.post('/', async (req, res) => {
   }
 })
 
-// DELETE /pets/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', autenticar, async (req, res) => {
   try {
-    const pet = await Pet.findByIdAndDelete(req.params.id)
+    const pet = await Pet.findById(req.params.id)
 
     if (!pet) {
       return res.status(404).json({ error: 'Pet não encontrado.' })
     }
 
+    const ehDono = pet.donoId.toString() === req.user._id.toString()
+    if (!ehDono && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Sem permissão para remover este pet.' })
+    }
+
+    await pet.deleteOne()
     res.json({ message: 'Pet removido com sucesso.' })
   } catch (err) {
     res.status(500).json({ error: err.message })

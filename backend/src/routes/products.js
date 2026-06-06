@@ -1,16 +1,17 @@
 // ══════════════════════════════════════════════
 // routes/products.js
-// GET    /products      → lista todos os produtos
-// POST   /products      → cadastra novo produto
-// PUT    /products/:id  → atualiza produto completo
-// DELETE /products/:id  → remove produto
+// GET    /products      → público (loja)
+// POST   /products      → apenas admin
+// PUT    /products/:id  → apenas admin
+// DELETE /products/:id  → apenas admin
 // ══════════════════════════════════════════════
 import { Router } from 'express'
 import { Product } from '../models/index.js'
+import { autenticar, apenasAdmin } from '../middleware/auth.js'
 
 const router = Router()
 
-// GET /products
+// GET /products — público
 router.get('/', async (req, res) => {
   try {
     const products = await Product.find()
@@ -20,8 +21,8 @@ router.get('/', async (req, res) => {
   }
 })
 
-// POST /products
-router.post('/', async (req, res) => {
+// POST /products — apenas admin
+router.post('/', autenticar, apenasAdmin, async (req, res) => {
   try {
     const { name, unit, cat, price, stock, desc, emoji } = req.body
 
@@ -36,14 +37,10 @@ router.post('/', async (req, res) => {
   }
 })
 
-// PUT /products/:id
-router.put('/:id', async (req, res) => {
+// PUT /products/:id — apenas admin
+router.put('/:id', autenticar, apenasAdmin, async (req, res) => {
   try {
-    const produto = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    )
+    const produto = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true })
 
     if (!produto) {
       return res.status(404).json({ error: 'Produto não encontrado.' })
@@ -55,8 +52,8 @@ router.put('/:id', async (req, res) => {
   }
 })
 
-// DELETE /products/:id
-router.delete('/:id', async (req, res) => {
+// DELETE /products/:id — apenas admin
+router.delete('/:id', autenticar, apenasAdmin, async (req, res) => {
   try {
     const produto = await Product.findByIdAndDelete(req.params.id)
 

@@ -1,17 +1,19 @@
 // ══════════════════════════════════════════════
 // routes/compras.js
-// GET  /compras  → lista todas as compras
-// POST /compras  → registra nova compra
+// GET  /compras  → autenticado (user: só suas; admin: todas)
+// POST /compras  → autenticado
 // ══════════════════════════════════════════════
 import { Router } from 'express'
 import { Compra } from '../models/index.js'
+import { autenticar } from '../middleware/auth.js'
 
 const router = Router()
 
 // GET /compras
-router.get('/', async (req, res) => {
+router.get('/', autenticar, async (req, res) => {
   try {
-    const compras = await Compra.find().sort({ createdAt: -1 })
+    const filtro = req.user.role === 'admin' ? {} : { donoId: req.user._id }
+    const compras = await Compra.find(filtro).sort({ createdAt: -1 })
     res.json(compras)
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -19,7 +21,7 @@ router.get('/', async (req, res) => {
 })
 
 // POST /compras
-router.post('/', async (req, res) => {
+router.post('/', autenticar, async (req, res) => {
   try {
     const { donoId, donoNome, itens, total, data, status } = req.body
 

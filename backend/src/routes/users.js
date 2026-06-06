@@ -1,25 +1,28 @@
 // ══════════════════════════════════════════════
 // routes/users.js
-// GET  /users        → lista todos os usuários
-// POST /users        → cadastra novo usuário
-// POST /users/login  → autentica usuário
+// POST /users/login  → retorna token JWT
+// POST /users        → cadastro (público)
+// GET  /users        → apenas admin
 // ══════════════════════════════════════════════
 import { Router } from 'express'
+import jwt from 'jsonwebtoken'
 import { User } from '../models/index.js'
+import { autenticar, apenasAdmin } from '../middleware/auth.js'
 
 const router = Router()
+const SECRET = process.env.JWT_SECRET || 'petcare_secret_2024'
 
-// GET /users
-router.get('/', async (req, res) => {
+// GET /users — apenas admin
+router.get('/', autenticar, apenasAdmin, async (req, res) => {
   try {
-    const users = await User.find({}, '-password')  // não retorna a senha
+    const users = await User.find({}, '-password')
     res.json(users)
   } catch (err) {
     res.status(500).json({ error: err.message })
   }
 })
 
-// POST /users — cadastro
+// POST /users — cadastro (público)
 router.post('/', async (req, res) => {
   try {
     const { name, email, password, role = 'user' } = req.body
@@ -41,7 +44,7 @@ router.post('/', async (req, res) => {
   }
 })
 
-// POST /users/login — autenticação
+// POST /users/login — retorna token JWT
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body
@@ -55,8 +58,15 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Email ou senha inválidos.' })
     }
 
+    // Gera o token JWT com id e role dentro do payload
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      SECRET,
+      { expiresIn: '8h' }
+    )
+
     const { password: _, ...semSenha } = user.toObject()
-    res.json(semSenha)
+    res.json({ ...semSenha, token })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }
