@@ -1,7 +1,3 @@
-// ══════════════════════════════════════════════
-// App.jsx — Componente raiz com Redux
-// ══════════════════════════════════════════════
-
 import { useEffect, useState, useCallback } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -19,15 +15,16 @@ import Loja         from './pages/Loja'
 import Estoque      from './pages/Estoque'
 
 import { fetchUsers, loginUser, logout, registerUser } from './store/authSlice'
-import { fetchPets }          from './store/petsSlice'
-import { fetchAgendamentos }  from './store/agendamentosSlice'
-import { fetchCompras }       from './store/comprasSlice'
-import { fetchProducts }      from './store/productsSlice'
+import { fetchPets,         limparPets         } from './store/petsSlice'
+import { fetchAgendamentos, limparAgendamentos  } from './store/agendamentosSlice'
+import { fetchCompras,      limparCompras       } from './store/comprasSlice'
+import { fetchProducts } from './store/productsSlice'
 import { addItem, abrirCarrinho, fecharCarrinho } from './store/carrinhoSlice'
+
 
 function RotaProtegida({ currentUser, adminOnly = false, children }) {
   if (!currentUser) return <Navigate to="/" replace />
-  if (adminOnly && currentUser.role !== 'admin') return <Navigate to="/" replace />
+  if (adminOnly && currentUser.role !== 'admin') return <Navigate to="/dashboard" replace />
   return children
 }
 
@@ -35,38 +32,43 @@ function AppContent() {
   const navigate  = useNavigate()
   const dispatch  = useDispatch()
 
-  // Seletores Redux
-  const currentUser = useSelector(s => s.auth.currentUser)
-  const users       = useSelector(s => s.auth.users)
+  const currentUser    = useSelector(s => s.auth.currentUser)
+  const users          = useSelector(s => s.auth.users)
   const carrinhoAberto = useSelector(s => s.carrinho.aberto)
 
-  // Toast local (não precisa ser global no Redux para este caso)
   const [toast, setToast] = useState({ msg: '', type: 'success', visible: false })
 
   const showToast = useCallback((msg, type = 'success') => {
     setToast({ msg, type, visible: true })
     setTimeout(() => setToast(prev => ({ ...prev, visible: false })), 3000)
   }, [])
-
-  // Carrega dados do backend ao iniciar
   useEffect(() => {
-    dispatch(fetchUsers())
-    dispatch(fetchPets())
-    dispatch(fetchAgendamentos())
-    dispatch(fetchCompras())
     dispatch(fetchProducts())
   }, [dispatch])
+  useEffect(() => {
+    if (currentUser) {
+      dispatch(fetchPets())
+      dispatch(fetchAgendamentos())
+      dispatch(fetchCompras())
+      if (currentUser.role === 'admin') {
+        dispatch(fetchUsers())
+      }
+    } else {
+      dispatch(limparPets())
+      dispatch(limparAgendamentos())
+      dispatch(limparCompras())
+    }
+  }, [dispatch, currentUser])
 
-  // ── Login ──
   const handleLogin = useCallback(async (credenciais) => {
-  const result = await dispatch(loginUser(credenciais))
-  if (result.meta.requestStatus === 'fulfilled') {
-    showToast(`Bem-vindo, ${result.payload.name}!`, 'success')
-    navigate('/dashboard')
-  } else {
-    showToast(result.payload || 'Email ou senha inválidos.', 'error')
-  }
-}, [dispatch, showToast, navigate])
+    const result = await dispatch(loginUser(credenciais))
+    if (result.meta.requestStatus === 'fulfilled') {
+      showToast(`Bem-vindo, ${result.payload.name}!`, 'success')
+      navigate('/dashboard')
+    } else {
+      showToast(result.payload || 'Email ou senha inválidos.', 'error')
+    }
+  }, [dispatch, showToast, navigate])
 
   // ── Logout ──
   const handleLogout = useCallback(() => {
@@ -77,8 +79,7 @@ function AppContent() {
 
   // ── Cadastro ──
   const handleRegister = useCallback(async (novoUsuario) => {
-    const result = await dispatch(registerUser(novoUsuario))
-    return result
+    return dispatch(registerUser(novoUsuario))
   }, [dispatch])
 
   // ── Carrinho ──
@@ -109,15 +110,22 @@ function AppContent() {
       />
 
       <Routes>
+        {/* ── Rotas públicas ── */}
         <Route path="/" element={
           <Home addToCart={addToCart} currentUser={currentUser} showToast={showToast} />
         } />
         <Route path="/loja" element={
           <Loja addToCart={addToCart} />
         } />
+
+        {/* ── Checkout: exige login ── */}
         <Route path="/checkout" element={
-          <Checkout showToast={showToast} />
+          <RotaProtegida currentUser={currentUser}>
+            <Checkout showToast={showToast} />
+          </RotaProtegida>
         } />
+
+        {/* ── Rotas de usuário autenticado ── */}
         <Route path="/dashboard" element={
           <RotaProtegida currentUser={currentUser}>
             <Dashboard currentUser={currentUser} showToast={showToast} />
@@ -138,11 +146,14 @@ function AppContent() {
             <Historico />
           </RotaProtegida>
         } />
+
+        {/* ── Rota exclusiva de admin ── */}
         <Route path="/estoque" element={
           <RotaProtegida currentUser={currentUser} adminOnly>
             <Estoque showToast={showToast} />
           </RotaProtegida>
         } />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 

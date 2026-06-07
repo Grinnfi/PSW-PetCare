@@ -1,7 +1,3 @@
-// ══════════════════════════════════════════════
-// CadastrarPet.jsx — Redux, isolamento por usuário
-// ══════════════════════════════════════════════
-
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -20,10 +16,7 @@ export default function CadastrarPet({ showToast }) {
   const petsStatus  = useSelector(s => s.pets.status)
   const isAdmin     = currentUser?.role === 'admin'
 
-  // Admin vê todos; cliente vê só os seus
-  const pets = isAdmin
-    ? allPets
-    : allPets.filter(p => p.donoId === currentUser?.id)
+  const pets = allPets
 
   const [nome,    setNome]    = useState('')
   const [especie, setEspecie] = useState('Cachorro')
@@ -43,7 +36,7 @@ export default function CadastrarPet({ showToast }) {
       sexo,
       idade:    idade.trim(),
       obs:      obs.trim(),
-      donoId:   currentUser.id,
+      donoId:   currentUser._id,
       donoNome: currentUser.name,
     }))
 
@@ -166,7 +159,7 @@ export default function CadastrarPet({ showToast }) {
           )}
 
           {pets.map(pet => (
-            <div key={pet.id} className="pet-card">
+            <div key={pet._id} className="pet-card">
               <div className="pet-card-top">
                 <div className="pet-avatar">{PET_EMOJI[pet.especie] || '🐾'}</div>
                 <div>

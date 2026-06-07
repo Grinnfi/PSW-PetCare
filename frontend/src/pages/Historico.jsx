@@ -28,17 +28,12 @@ export default function Historico() {
   const allAgs     = useSelector(s => s.agendamentos.list)
   const allCompras = useSelector(s => s.compras.list)
 
-  const agendamentos = isAdmin
-    ? allAgs
-    : allAgs.filter(a => a.donoId === currentUser?.id)
-
-  const compras = isAdmin
-    ? allCompras
-    : allCompras.filter(c => c.donoId === currentUser?.id)
+  const agendamentos = allAgs
+  const compras = allCompras
 
   const handleCancelar = async (ag) => {
     if (ag.status !== 'pendente') return
-    await dispatch(cancelarAgendamento(ag.id))
+    await dispatch(cancelarAgendamento(ag._id))
   }
 
   const itensUnificados = [
@@ -48,16 +43,15 @@ export default function Historico() {
       titulo: `${a.servico} – ${a.petNome}`,
       sub: `${a.petEspecie}${isAdmin ? ' · ' + a.donoNome : ''}`,
       data: a.data, hora: a.hora,
-      status: a.status, id: a.id, raw: a,
+      status: a.status, id: a._id, raw: a,
     })),
     ...compras.map(c => ({
       tipo: 'compra',
       icon: '🛒',
-      titulo: `Pedido #${c.id} – ${c.itens?.length || 0} produto(s)`,
+      titulo: `Pedido #${String(c._id).slice(-6)} – ${c.itens?.length || 0} produto(s)`,
       sub: c.itens?.map(i => i.nome).join(', ') || '',
       data: c.data, hora: null,
-      status: c.status || 'entregue',
-      valor: c.total, id: c.id, raw: c,
+      status: c.status || 'entregue', valor: c.total, id: c._id, raw: c,
     })),
   ].sort((a, b) => (b.data || '').localeCompare(a.data || ''))
 

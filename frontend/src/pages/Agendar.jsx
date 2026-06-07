@@ -24,18 +24,17 @@ export default function Agendar({ showToast }) {
   const isAdmin     = currentUser?.role === 'admin'
 
   // Cada usuário agenda apenas com seus pets
-  const pets = isAdmin ? allPets : allPets.filter(p => p.donoId === currentUser?.id)
+  const pets = allPets 
 
   // Agendamentos: admin vê todos, cliente vê os seus
   const allAgendamentos = useSelector(s => s.agendamentos.list)
   const proximosAgs = isAdmin
     ? allAgendamentos.filter(a => a.status === 'pendente')
-    : allAgendamentos.filter(a => a.donoId === currentUser?.id && a.status === 'pendente')
-
+    : allAgendamentos.filter(a => a.status === 'pendente')
   const [servicoSelecionado, setServicoSelecionado] = useState('')
   const [data, setData] = useState('')
   const [hora, setHora] = useState('08:00')
-  const [petId, setPetId] = useState(pets[0]?.id || '')
+  const [petId, setPetId] = useState(pets[0]?._id || '')
 
   const confirmarAgendamento = async () => {
     if (!servicoSelecionado) { showToast('Selecione um serviço.', 'error'); return }
@@ -45,10 +44,10 @@ export default function Agendar({ showToast }) {
     const pet = pets.find(p => p.id === Number(petId)) || pets[0]
 
     const novoAg = {
-      petId:    pet.id,
+      petId:    pet._id,
       petNome:  pet.name,
       petEspecie: pet.especie,
-      donoId:   currentUser.id,
+      donoId:   currentUser._id,
       donoNome: currentUser.name,
       servico:  servicoSelecionado,
       data, hora,
@@ -102,7 +101,7 @@ export default function Agendar({ showToast }) {
                   <select className="fc" value={petId} onChange={e => setPetId(e.target.value)}>
                     {pets.length === 0
                       ? <option value="">Nenhum pet cadastrado</option>
-                      : pets.map(p => <option key={p.id} value={p.id}>{p.name}{isAdmin ? ` (${p.donoNome})` : ''}</option>)
+                      : pets.map(p => <option key={p.id} value={p._id}>{p.name}{isAdmin ? ` (${p.donoNome})` : ''}</option>)
                     }
                   </select>
                 </label>
