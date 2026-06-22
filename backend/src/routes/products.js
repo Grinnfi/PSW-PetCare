@@ -1,10 +1,3 @@
-// ══════════════════════════════════════════════
-// routes/products.js
-// GET    /products      → público (loja)
-// POST   /products      → apenas admin
-// PUT    /products/:id  → apenas admin
-// DELETE /products/:id  → apenas admin
-// ══════════════════════════════════════════════
 import { Router } from 'express'
 import { Product } from '../models/index.js'
 import { autenticar, apenasAdmin } from '../middleware/auth.js'
@@ -16,6 +9,19 @@ router.get('/', async (req, res) => {
   try {
     const products = await Product.find()
     res.json(products)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// GET /products/:id — público
+router.get('/:id', async (req, res) => {
+  try {
+    const produto = await Product.findById(req.params.id)
+    if (!produto) {
+      return res.status(404).json({ error: 'Produto não encontrado.' })
+    }
+    res.json(produto)
   } catch (err) {
     res.status(500).json({ error: err.message })
   }
