@@ -1,10 +1,11 @@
 // ══════════════════════════════════════════════
-// Historico.jsx — Histórico de serviços e compras (Redux)
+// Historico.jsx — Histórico de serviços e compras
 // ══════════════════════════════════════════════
 
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { cancelarAgendamento } from '../store/agendamentosSlice'
+import ModalDetalheCompra from '../components/ModalDetalheCompra'
 
 const STATUS_MAP = {
   pendente:  { cls: 'pend',   label: 'Pendente' },
@@ -30,6 +31,8 @@ export default function Historico() {
 
   const agendamentos = allAgs
   const compras = allCompras
+
+  const [compraSelecionada, setCompraSelecionada] = useState(null)
 
   const handleCancelar = async (ag) => {
     if (ag.status !== 'pendente') return
@@ -100,8 +103,13 @@ export default function Historico() {
           itensFiltrados.map((item, i) => {
             const st = STATUS_MAP[item.status] || { cls:'pend', label: item.status }
             const podeCancelar = item.tipo === 'agendamento' && item.status === 'pendente'
+            const ehCompra = item.tipo === 'compra'
             return (
-              <div key={i} className="hist-item">
+              <div
+                key={i}
+                className={`hist-item ${ehCompra ? 'clickable' : ''}`}
+                onClick={() => ehCompra && setCompraSelecionada(item.raw)}
+              >
                 <div className="hist-icon">{item.icon}</div>
                 <div className="hist-info">
                   <div className="hist-title">{item.titulo}</div>
@@ -119,7 +127,7 @@ export default function Historico() {
                   <span className={`hist-status ${st.cls}`}>{st.label}</span>
                   {podeCancelar && (
                     <button
-                      onClick={() => handleCancelar(item.raw)}
+                      onClick={(e) => { e.stopPropagation(); handleCancelar(item.raw) }}
                       style={{
                         padding:'4px 10px', borderRadius:6, border:'1.5px solid var(--red)',
                         background:'var(--red-bg)', color:'var(--red)',
@@ -129,12 +137,21 @@ export default function Historico() {
                       Cancelar
                     </button>
                   )}
+                  {ehCompra && (
+                    <span style={{ fontSize:'.7rem', color:'var(--p)', fontWeight:700 }}>Ver detalhes →</span>
+                  )}
                 </div>
               </div>
             )
           })
         )}
       </div>
+
+      <ModalDetalheCompra
+        isOpen={!!compraSelecionada}
+        onClose={() => setCompraSelecionada(null)}
+        compra={compraSelecionada}
+      />
     </div>
   )
 }
