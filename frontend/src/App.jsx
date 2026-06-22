@@ -13,6 +13,8 @@ import Agendar      from './pages/Agendar'
 import Historico    from './pages/Historico'
 import Loja         from './pages/Loja'
 import Estoque      from './pages/Estoque'
+import ProdutoDetalhe from './pages/ProdutoDetalhe'
+import PedidoDetalhe from './pages/PedidoDetalhe'
 
 import { fetchUsers, loginUser, logout, registerUser } from './store/authSlice'
 import { fetchPets,         limparPets         } from './store/petsSlice'
@@ -83,10 +85,27 @@ function AppContent() {
   }, [dispatch])
 
   // ── Carrinho ──
+  const itensCarrinho = useSelector(s => s.carrinho.itens)
+
   const addToCart = useCallback((produto) => {
+    const idNorm   = produto.id ?? produto._id
+    const maxStock = typeof produto.stock === 'number' ? produto.stock : null
+    const jaNoCarrinho = itensCarrinho.find(i => i.id === idNorm)?.qtd || 0
+    const nome = produto.name || produto.nome
+
+    if (maxStock !== null && jaNoCarrinho >= maxStock) {
+      showToast(`Você já tem todas as ${maxStock} unidades de "${nome}" disponíveis no carrinho.`, 'error')
+      return
+    }
+
     dispatch(addItem(produto))
-    showToast(`"${produto.name || produto.nome}" adicionado ao carrinho! 🛒`, 'success')
-  }, [dispatch, showToast])
+
+    if (maxStock !== null && jaNoCarrinho + (produto.qtd || 1) > maxStock) {
+      showToast(`Só havia ${maxStock - jaNoCarrinho} unidade(s) de "${nome}" em estoque. Carrinho ajustado.`, 'info')
+    } else {
+      showToast(`"${nome}" adicionado ao carrinho! 🛒`, 'success')
+    }
+  }, [dispatch, showToast, itensCarrinho])
 
   const cartCount = useSelector(s => s.carrinho.itens.reduce((a, i) => a + i.qtd, 0))
 
@@ -117,6 +136,9 @@ function AppContent() {
         <Route path="/loja" element={
           <Loja addToCart={addToCart} />
         } />
+        <Route path="/produto/:id" element={
+          <ProdutoDetalhe addToCart={addToCart} showToast={showToast} />
+        } />
 
         {/* ── Checkout: exige login ── */}
         <Route path="/checkout" element={
@@ -144,6 +166,11 @@ function AppContent() {
         <Route path="/historico" element={
           <RotaProtegida currentUser={currentUser}>
             <Historico />
+          </RotaProtegida>
+        } />
+        <Route path="/pedido/:id" element={
+          <RotaProtegida currentUser={currentUser}>
+            <PedidoDetalhe />
           </RotaProtegida>
         } />
 
