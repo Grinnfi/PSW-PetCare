@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { pegarImagem } from '../utils/imagemProduto.js'
 
 const API = 'http://localhost:3001'
 const LOW_THRESHOLD = 10
@@ -104,7 +105,12 @@ export default function ProdutoDetalhe({ addToCart }) {
 
       <div className="detalhe-layout">
         <div className="detalhe-img">
-          <span>{produto.emoji || '📦'}</span>
+          {(() => {
+            const imagem = pegarImagem(produto)
+            return imagem
+              ? <img src={imagem} alt={produto.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: 'var(--r)' }} />
+              : <span>{produto.emoji || '📦'}</span>
+          })()}
         </div>
 
         <div className="detalhe-info">
@@ -159,8 +165,13 @@ export default function ProdutoDetalhe({ addToCart }) {
             {relacionados.map(prod => (
               <div key={prod._id} className="prod-card" onClick={() => navigate(`/produto/${prod._id}`)}>
                 <div className="prod-img">
-                  <span className="prod-media">{prod.emoji || '📦'}</span>
-                </div>
+                {(() => {
+                  const img = pegarImagem(prod)
+                  return img
+                    ? <img src={img} alt={prod.name} className="prod-media" />
+                    : <span className="prod-media">{prod.emoji || '📦'}</span>
+                })()}
+              </div>
                 <div className="prod-info">
                   <div className="prod-name">{prod.name}</div>
                   <div className="prod-price">{fmtPreco(prod.price)}</div>

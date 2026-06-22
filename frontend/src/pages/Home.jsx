@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { pegarImagem } from '../utils/imagemProduto.js'
 
 const SLIDES = [
   { bg: 'slide-1', emoji: '🐶', deco: '🐕', titulo: ['Ração Premium', 'para Cães Adultos'], precoAntigo: 'R$ 94,90', preco: '85', centavos: '90', cta: 'Clique e Aproveite →' },
@@ -123,24 +124,30 @@ export default function Home({ addToCart, currentUser, showToast }) {
 
         <div className="section-title">Produtos em <span>Destaque</span></div>
         <div className="products-grid">
-          {destaque.map(prod => (
-            <div key={prod._id} className="prod-card" onClick={() => navigate(`/produto/${prod._id}`)}>
-              <div className="prod-img">
-                <span className="prod-media">{prod.emoji || '📦'}</span>
+          {destaque.map(prod => {
+            const imagem = pegarImagem(prod)
+            return (
+              <div key={prod._id} className="prod-card" onClick={() => navigate(`/produto/${prod._id}`)}>
+                <div className="prod-img">
+                  {imagem
+                    ? <img src={imagem} alt={prod.name} className="prod-media" />
+                    : <span className="prod-media">{prod.emoji || '📦'}</span>
+                  }
+                </div>
+                <div className="prod-info">
+                  <div className="prod-name">{prod.name}</div>
+                  <div className="prod-price">{fmtPreco(prod.price)}</div>
+                  <button
+                    className="btn-add-cart"
+                    disabled={prod.stock === 0}
+                    onClick={(e) => { e.stopPropagation(); addToCart(prod) }}
+                  >
+                    {prod.stock === 0 ? 'Esgotado' : '+ Adicionar'}
+                  </button>
+                </div>
               </div>
-              <div className="prod-info">
-                <div className="prod-name">{prod.name}</div>
-                <div className="prod-price">{fmtPreco(prod.price)}</div>
-                <button
-                  className="btn-add-cart"
-                  disabled={prod.stock === 0}
-                  onClick={(e) => { e.stopPropagation(); addToCart(prod) }}
-                >
-                  {prod.stock === 0 ? 'Esgotado' : '+ Adicionar'}
-                </button>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>
