@@ -9,13 +9,22 @@ export const fetchCompras = createAsyncThunk('compras/fetchAll', async () => {
   return res.json()
 })
 
-export const addCompra = createAsyncThunk('compras/add', async (compra) => {
+export const addCompra = createAsyncThunk('compras/add', async (compra, { rejectWithValue }) => {
   const res = await fetch(`${API}/compras`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeader() },
     body: JSON.stringify(compra),
   })
-  return res.json()
+
+  let data
+  try {
+    data = await res.json()
+  } catch {
+    return rejectWithValue('Sessão expirada. Faça login novamente.')
+  }
+
+  if (!res.ok) return rejectWithValue(data.error || 'Não foi possível concluir a compra.')
+  return data
 })
 
 const comprasSlice = createSlice({
