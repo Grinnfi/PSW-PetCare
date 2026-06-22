@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 const SLIDES = [
   { bg: 'slide-1', emoji: '🐶', deco: '🐕', titulo: ['Ração Premium', 'para Cães Adultos'], precoAntigo: 'R$ 94,90', preco: '85', centavos: '90', cta: 'Clique e Aproveite →' },
@@ -16,17 +17,13 @@ const CATEGORIAS = [
   { emoji: '🌿', label: 'Casa e Jardim' },
 ]
 
-const PRODUTOS_DESTAQUE = [
-  { id: 'racao-premium',      emoji: '🦴', nome: 'Ração Premium Cão 15kg',  precoAntigo: 'R$ 94,90',  preco: 'R$ 85,90',  precoNum: 85.90  },
-  { id: 'shampoo-pet',        emoji: '🐾', nome: 'Shampoo Pet Neutro 500ml', precoAntigo: 'R$ 35,00',  preco: 'R$ 28,90',  precoNum: 28.90  },
-  { id: 'brinquedo-mordedor', emoji: '🎾', nome: 'Brinquedo Mordedor',        precoAntigo: 'R$ 25,00',  preco: 'R$ 19,90',  precoNum: 19.90  },
-  { id: 'cama-pet',           emoji: '🛏️', nome: 'Cama Pet Grande',           precoAntigo: 'R$ 150,00', preco: 'R$ 120,00', precoNum: 120.00 },
-  { id: 'antipulgas',         emoji: '💊', nome: 'Antipulgas Spray 200ml',    precoAntigo: 'R$ 48,00',  preco: 'R$ 38,50',  precoNum: 38.50  },
-]
+const fmtPreco = (v) => 'R$ ' + Number(v).toFixed(2).replace('.', ',')
 
 export default function Home({ addToCart, currentUser, showToast }) {
   const navigate = useNavigate()
   const [slideAtual, setSlideAtual] = useState(0)
+  const produtos = useSelector(s => s.products.list)
+  const destaque = produtos.slice(0, 5)
 
   const proximoSlide = useCallback(() => {
     setSlideAtual(s => (s + 1) % SLIDES.length)
@@ -126,17 +123,20 @@ export default function Home({ addToCart, currentUser, showToast }) {
 
         <div className="section-title">Produtos em <span>Destaque</span></div>
         <div className="products-grid">
-          {PRODUTOS_DESTAQUE.map(prod => (
-            <div key={prod.id} className="prod-card">
+          {destaque.map(prod => (
+            <div key={prod._id} className="prod-card" onClick={() => navigate(`/produto/${prod._id}`)}>
               <div className="prod-img">
-              <span className="prod-media">{prod.emoji}</span>
-            </div>
+                <span className="prod-media">{prod.emoji || '📦'}</span>
+              </div>
               <div className="prod-info">
-                <div className="prod-name">{prod.nome}</div>
-                <div className="prod-old">{prod.precoAntigo}</div>
-                <div className="prod-price">{prod.preco}</div>
-                <button className="btn-add-cart" onClick={() => addToCart(prod)}>
-                  + Adicionar
+                <div className="prod-name">{prod.name}</div>
+                <div className="prod-price">{fmtPreco(prod.price)}</div>
+                <button
+                  className="btn-add-cart"
+                  disabled={prod.stock === 0}
+                  onClick={(e) => { e.stopPropagation(); addToCart(prod) }}
+                >
+                  {prod.stock === 0 ? 'Esgotado' : '+ Adicionar'}
                 </button>
               </div>
             </div>
