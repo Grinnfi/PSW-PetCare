@@ -18,6 +18,15 @@ export const addPet = createAsyncThunk('pets/add', async (pet) => {
   return res.json()
 })
 
+export const updatePet = createAsyncThunk('pets/update', async (pet) => {
+  const res = await fetch(`${API}/pets/${pet._id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...authHeader() },
+    body: JSON.stringify(pet),
+  })
+  return res.json()
+})
+
 export const removePet = createAsyncThunk('pets/remove', async (id) => {
   await fetch(`${API}/pets/${id}`, { method: 'DELETE', headers: { ...authHeader() } })
   return id
@@ -35,6 +44,10 @@ const petsSlice = createSlice({
       .addCase(fetchPets.fulfilled,  (state, action) => { state.status = 'succeeded'; state.list = action.payload })
       .addCase(fetchPets.rejected,   (state) => { state.status = 'failed' })
       .addCase(addPet.fulfilled,     (state, action) => { state.list.push(action.payload) })
+      .addCase(updatePet.fulfilled,  (state, action) => {
+        const idx = state.list.findIndex(p => p._id === action.payload._id)
+        if (idx !== -1) state.list[idx] = action.payload
+      })
       .addCase(removePet.fulfilled,  (state, action) => { state.list = state.list.filter(p => p._id !== action.payload) })
   },
 })

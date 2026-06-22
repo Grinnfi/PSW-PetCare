@@ -3,7 +3,7 @@
 // Props: isOpen, onClose, onConfirm, nomeProduto
 // ══════════════════════════════════════════════
 
-export default function ModalExcluir({ isOpen, onClose, onConfirm, nomeProduto }) {
+export default function ModalExcluir({ isOpen, onClose, onConfirm, nomeProduto, titulo = 'Remover Produto?' }) {
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) onClose()
   }
@@ -21,7 +21,7 @@ export default function ModalExcluir({ isOpen, onClose, onConfirm, nomeProduto }
           </svg>
         </div>
 
-        <div className="del-title">Remover Produto?</div>
+        <div className="del-title">{titulo}</div>
         <div className="del-desc">
           Tem certeza que deseja remover{' '}
           <strong>"{nomeProduto}"</strong>?{' '}

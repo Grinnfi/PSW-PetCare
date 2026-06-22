@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { addPet } from '../store/petsSlice'
+import { addPet, updatePet, removePet } from '../store/petsSlice'
+import ModalExcluir from '../components/ModalExcluir'
 
 const PET_EMOJI = {
   Cachorro: '🐶', Gato: '🐱', Pássaro: '🐦',
@@ -18,6 +19,10 @@ export default function CadastrarPet({ showToast }) {
 
   const pets = allPets
 
+  const [petEditando, setPetEditando] = useState(null)
+  const [petExcluindo, setPetExcluindo] = useState(null)
+  const [modalExcluirAberto, setModalExcluirAberto] = useState(false)
+
   const [nome,    setNome]    = useState('')
   const [especie, setEspecie] = useState('Cachorro')
   const [raca,    setRaca]    = useState('')
@@ -25,24 +30,61 @@ export default function CadastrarPet({ showToast }) {
   const [idade,   setIdade]   = useState('')
   const [obs,     setObs]     = useState('')
 
+  const resetForm = () => {
+    setPetEditando(null)
+    setNome(''); setRaca(''); setIdade(''); setObs('')
+    setEspecie('Cachorro'); setSexo('Macho')
+  }
+
+  const iniciarEdicao = (pet) => {
+    setPetEditando(pet)
+    setNome(pet.name)
+    setEspecie(pet.especie)
+    setRaca(pet.raca || '')
+    setSexo(pet.sexo || 'Macho')
+    setIdade(pet.idade || '')
+    setObs(pet.obs || '')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const salvarPet = async () => {
     if (!currentUser) { showToast('Faça login para cadastrar um pet.', 'error'); return }
     if (!nome.trim()) { showToast('Nome é obrigatório.', 'error'); return }
 
-    await dispatch(addPet({
-      name:     nome.trim(),
-      especie,
-      raca:     raca.trim(),
-      sexo,
-      idade:    idade.trim(),
-      obs:      obs.trim(),
-      donoId:   currentUser._id,
-      donoNome: currentUser.name,
-    }))
+    if (petEditando) {
+      await dispatch(updatePet({
+        _id:      petEditando._id,
+        name:     nome.trim(),
+        especie,
+        raca:     raca.trim(),
+        sexo,
+        idade:    idade.trim(),
+        obs:      obs.trim(),
+      }))
+      showToast(`Pet "${nome}" atualizado com sucesso!`, 'success')
+    } else {
+      await dispatch(addPet({
+        name:     nome.trim(),
+        especie,
+        raca:     raca.trim(),
+        sexo,
+        idade:    idade.trim(),
+        obs:      obs.trim(),
+        donoId:   currentUser._id,
+        donoNome: currentUser.name,
+      }))
+      showToast(`Pet "${nome}" cadastrado com sucesso!`, 'success')
+    }
 
-    showToast(`Pet "${nome}" cadastrado com sucesso!`, 'success')
-    setNome(''); setRaca(''); setIdade(''); setObs('')
-    setEspecie('Cachorro'); setSexo('Macho')
+    resetForm()
+  }
+
+  const confirmarExclusao = async () => {
+    await dispatch(removePet(petExcluindo._id))
+    showToast(`Pet "${petExcluindo.name}" removido.`, 'info')
+    if (petEditando?._id === petExcluindo._id) resetForm()
+    setModalExcluirAberto(false)
+    setPetExcluindo(null)
   }
 
   // Proteção: se não há usuário logado, não renderiza nada problemático
@@ -58,8 +100,8 @@ export default function CadastrarPet({ showToast }) {
     <div id="page-cadastrar" className="page">
       <div className="page-header-row">
         <div className="page-htitle">
-          <h1>Cadastrar Pet</h1>
-          <p>Adicione um novo animal ao sistema.</p>
+          <h1>{petEditando ? 'Editar Pet' : 'Cadastrar Pet'}</h1>
+          <p>{petEditando ? `Atualize as informações de "${petEditando.name}".` : 'Adicione um novo animal ao sistema.'}</p>
         </div>
       </div>
 
@@ -119,7 +161,7 @@ export default function CadastrarPet({ showToast }) {
             <input
               className="fc"
               type="text"
-              value={currentUser.name}
+              value={petEditando ? petEditando.donoNome : currentUser.name}
               readOnly
               style={{ background: 'var(--bg)', color: 'var(--muted)', cursor: 'not-allowed' }}
             />
@@ -134,8 +176,15 @@ export default function CadastrarPet({ showToast }) {
           </div>
 
           <div className="btn-form-row">
-            <button className="btn-cancel-form" onClick={() => navigate('/dashboard')}>Cancelar</button>
-            <button className="btn-save" onClick={salvarPet}>Cadastrar Pet</button>
+            <button
+              className="btn-cancel-form"
+              onClick={() => petEditando ? resetForm() : navigate('/dashboard')}
+            >
+              {petEditando ? 'Cancelar Edição' : 'Cancelar'}
+            </button>
+            <button className="btn-save" onClick={salvarPet}>
+              {petEditando ? 'Salvar Alterações' : 'Cadastrar Pet'}
+            </button>
           </div>
         </div>
 
@@ -159,14 +208,32 @@ export default function CadastrarPet({ showToast }) {
           )}
 
           {pets.map(pet => (
-            <div key={pet._id} className="pet-card">
+            <div key={pet._id} className={`pet-card ${petEditando?._id === pet._id ? 'editando' : ''}`}>
               <div className="pet-card-top">
-                <div className="pet-avatar">{PET_EMOJI[pet.especie] || '🐾'}</div>
-                <div>
-                  <div className="pet-pname">{pet.name}</div>
-                  <div className="pet-species">
-                    {pet.especie}{pet.raca ? ` · ${pet.raca}` : ''}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div className="pet-avatar">{PET_EMOJI[pet.especie] || '🐾'}</div>
+                  <div>
+                    <div className="pet-pname">{pet.name}</div>
+                    <div className="pet-species">
+                      {pet.especie}{pet.raca ? ` · ${pet.raca}` : ''}
+                    </div>
                   </div>
+                </div>
+                <div className="action-btns">
+                  <button className="action-btn edit" onClick={() => iniciarEdicao(pet)}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                  </button>
+                  <button className="action-btn del" onClick={() => { setPetExcluindo(pet); setModalExcluirAberto(true) }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                      <path d="M10 11v6"/><path d="M14 11v6"/>
+                      <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                    </svg>
+                  </button>
                 </div>
               </div>
               <div className="pet-details">
@@ -180,6 +247,14 @@ export default function CadastrarPet({ showToast }) {
         </div>
 
       </div>
+
+      <ModalExcluir
+        isOpen={modalExcluirAberto}
+        onClose={() => setModalExcluirAberto(false)}
+        onConfirm={confirmarExclusao}
+        nomeProduto={petExcluindo?.name || ''}
+        titulo="Remover Pet?"
+      />
     </div>
   )
 }

@@ -34,6 +34,34 @@ router.post('/', autenticar, async (req, res) => {
   }
 })
 
+router.put('/:id', autenticar, async (req, res) => {
+  try {
+    const pet = await Pet.findById(req.params.id)
+
+    if (!pet) {
+      return res.status(404).json({ error: 'Pet não encontrado.' })
+    }
+
+    const ehDono = pet.donoId.toString() === req.user._id.toString()
+    if (!ehDono && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Sem permissão para editar este pet.' })
+    }
+
+    const { name, especie, raca, sexo, idade, obs } = req.body
+    pet.name = name ?? pet.name
+    pet.especie = especie ?? pet.especie
+    pet.raca = raca ?? pet.raca
+    pet.sexo = sexo ?? pet.sexo
+    pet.idade = idade ?? pet.idade
+    pet.obs = obs ?? pet.obs
+
+    await pet.save()
+    res.json(pet)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 router.delete('/:id', autenticar, async (req, res) => {
   try {
     const pet = await Pet.findById(req.params.id)
