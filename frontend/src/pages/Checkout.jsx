@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════════
-// Checkout.jsx — Página de finalização de compra (Redux)
+// Checkout.jsx — Página de finalização de compra
 // ══════════════════════════════════════════════
 
 import { useState, useMemo } from 'react'
@@ -7,12 +7,10 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { limparCarrinho } from '../store/carrinhoSlice'
 import { addCompra } from '../store/comprasSlice'
+import { fetchProducts } from '../store/productsSlice'
 import * as masks from '../utils/masks'
 
-// ── Helpers ──
 const fmt = (v) => 'R$ ' + Number(v).toFixed(2).replace('.', ',')
-
-// ── Etapas do checkout ──
 const ETAPAS = [
   { id: 1, label: 'Dados Pessoais', icon: '👤' },
   { id: 2, label: 'Endereço', icon: '📍' },
@@ -34,17 +32,14 @@ export default function Checkout({ showToast }) {
   const cupom = useSelector(s => s.carrinho.cupom)
   const currentUser = useSelector(s => s.auth.currentUser)
 
-  // ── Etapa atual ──
   const [etapa, setEtapa] = useState(1)
   const [maxEtapa, setMaxEtapa] = useState(1)
   const [pulse, setPulse] = useState(false)
 
-  // ── Dados pessoais ──
   const [nome, setNome] = useState(currentUser?.name || '')
   const [email, setEmail] = useState(currentUser?.email || '')
   const [tel, setTel] = useState('')
 
-  // ── Endereço ──
   const [cep, setCep] = useState('')
   const [rua, setRua] = useState('')
   const [numero, setNumero] = useState('')
@@ -53,7 +48,6 @@ export default function Checkout({ showToast }) {
   const [cidade, setCidade] = useState('')
   const [estado, setEstado] = useState('')
 
-  // ── Pagamento ──
   const [formaPag, setFormaPag] = useState('credito')
   const [nomCartao, setNomCartao] = useState('')
   const [numCartao, setNumCartao] = useState('')
@@ -61,7 +55,6 @@ export default function Checkout({ showToast }) {
   const [cvv, setCvv] = useState('')
   const [loadingCep, setLoadingCep] = useState(false)
 
-  // ── Handlers com Máscaras ──
   const handleNome = (v) => setNome(masks.maskOnlyLetters(v))
   const handleTel = (v) => setTel(masks.maskPhone(v))
   const handleCep = (v) => setCep(masks.maskCEP(v))
@@ -155,27 +148,44 @@ export default function Checkout({ showToast }) {
   }
 
   const voltar = () => setEtapa(e => e - 1)
+    const finalizarPedido = async () => {
+      if (!currentUser) {
+        dispatch(limparCarrinho())
+        showToast('Pedido realizado com sucesso! 🎉', 'success')
+        setTimeout(() => navigate('/'), 1500)
+        return
+      }
 
-  // ── Finalizar pedido ──
-  const finalizarPedido = async () => {
-    if (currentUser) {
-      await dispatch(addCompra({
-        donoId: currentUser.id,
+      const result = await dispatch(addCompra({
+        donoId: currentUser._id,
         donoNome: currentUser.name,
         itens: itens.map(i => ({
+          produtoId: i._id || i.id,
           nome: i.name || i.nome,
           qtd: i.qtd,
           preco: i.price || i.preco || 0,
         })),
+        endereco: { cep, rua, numero, complemento, bairro, cidade, estado },
+        pagamento: {
+          forma: formaPag,
+          nomCartao: (formaPag === 'credito' || formaPag === 'debito') ? nomCartao : '',
+        },
         total,
         data: new Date().toISOString().split('T')[0],
         status: 'entregue',
       }))
+
+      if (result.meta.requestStatus === 'rejected') {
+        const mensagem = result.payload || result.error?.message || 'Não foi possível concluir a compra. Verifique o estoque.'
+        showToast(mensagem, 'error')
+        console.error('Erro ao finalizar compra:', result)
+        return
+      }
+      dispatch(fetchProducts())
+      dispatch(limparCarrinho())
+      showToast('Pedido realizado com sucesso! 🎉', 'success')
+      setTimeout(() => navigate('/'), 1500)
     }
-    dispatch(limparCarrinho())
-    showToast('Pedido realizado com sucesso! 🎉', 'success')
-    setTimeout(() => navigate('/'), 1500)
-  }
 
   return (
     <div id="page-checkout" className="page">

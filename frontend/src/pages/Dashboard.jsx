@@ -1,6 +1,5 @@
 // ══════════════════════════════════════════════
-// Dashboard.jsx — Painel de controle (Redux)
-// Admin: vê tudo. Cliente: vê apenas os seus dados.
+// Dashboard.jsx — Painel de controle 
 // ══════════════════════════════════════════════
 
 import { useNavigate } from 'react-router-dom'
@@ -20,9 +19,9 @@ export default function Dashboard({ currentUser, showToast }) {
   const allAgendamentos = useSelector(s => s.agendamentos.list)
   const allCompras      = useSelector(s => s.compras.list)
 
-  const meusPets         = isAdmin ? allPets : allPets.filter(p => p.donoId === currentUser?.id)
-  const meusAgendamentos = isAdmin ? allAgendamentos : allAgendamentos.filter(a => a.donoId === currentUser?.id)
-  const minhasCompras    = isAdmin ? allCompras : allCompras.filter(c => c.donoId === currentUser?.id)
+  const meusPets         = allPets
+  const meusAgendamentos = allAgendamentos
+  const minhasCompras    = allCompras
 
   const pendentes   = meusAgendamentos.filter(a => a.status === 'pendente')
   const concluidos  = meusAgendamentos.filter(a => a.status === 'concluido')
@@ -136,7 +135,7 @@ export default function Dashboard({ currentUser, showToast }) {
                   <div key={i} className="appt-item">
                     <div className="appt-avatar" style={{ background:'var(--green-bg)', color:'var(--green)' }}>🛒</div>
                     <div className="appt-info">
-                      <div className="appt-name">Pedido #{c.id}</div>
+                      <div className="appt-name">Pedido #{String(c._id).slice(-6)}</div>
                       <div className="appt-breed">{c.donoNome} · {c.itens?.length || 0} item(s)</div>
                     </div>
                     <div className="appt-time">

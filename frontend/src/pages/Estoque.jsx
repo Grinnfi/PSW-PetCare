@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════════
-// Estoque.jsx — Gestão de Estoque (Admin) com Redux
+// Estoque.jsx — Gestão de Estoque (Admin)
 // ══════════════════════════════════════════════
 
 import { useState, useMemo } from 'react'
@@ -54,13 +54,13 @@ export default function Estoque({ showToast }) {
     dispatch(updateProduct({ ...prod, stock: novoStock }))
   }
 
-  const salvarProduto = async ({ nome, cat, unit, desc, price, stock, emoji }) => {
+  const salvarProduto = async ({ nome, cat, categoriaPet, unit, desc, price, stock, emoji }) => {
     if (!nome || !unit || !desc) { showToast('Preencha todos os campos.', 'error'); return }
     if (produtoEditando) {
-      await dispatch(updateProduct({ ...produtoEditando, name: nome, cat, unit, desc, price, stock, emoji }))
+      await dispatch(updateProduct({ ...produtoEditando, name: nome, cat, categoriaPet, unit, desc, price, stock, emoji }))
       showToast(`"${nome}" atualizado!`, 'success')
     } else {
-      await dispatch(addProduct({ name: nome, cat, unit, desc, price, stock, emoji: emoji || '📦' }))
+      await dispatch(addProduct({ name: nome, cat, categoriaPet, unit, desc, price, stock, emoji: emoji || '📦' }))
       showToast(`"${nome}" cadastrado!`, 'success')
     }
     setModalProdutoAberto(false)
@@ -68,7 +68,7 @@ export default function Estoque({ showToast }) {
 
   const confirmarExclusao = async () => {
     const nome = produtoExcluindo.name
-    await dispatch(deleteProduct(produtoExcluindo.id))
+    await dispatch(deleteProduct(produtoExcluindo._id))
     setModalExcluirAberto(false)
     setProdutoExcluindo(null)
     showToast(`"${nome}" removido.`, 'error')

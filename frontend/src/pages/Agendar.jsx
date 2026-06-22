@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════════
-// Agendar.jsx — Agendamento de serviços (Redux)
+// Agendar.jsx — Agendamento de serviços
 // ══════════════════════════════════════════════
 
 import { useState } from 'react'
@@ -22,11 +22,7 @@ export default function Agendar({ showToast }) {
   const currentUser = useSelector(s => s.auth.currentUser)
   const allPets     = useSelector(s => s.pets.list)
   const isAdmin     = currentUser?.role === 'admin'
-
-  // Cada usuário agenda apenas com seus pets
   const pets = allPets 
-
-  // Agendamentos: admin vê todos, cliente vê os seus
   const allAgendamentos = useSelector(s => s.agendamentos.list)
   const proximosAgs = isAdmin
     ? allAgendamentos.filter(a => a.status === 'pendente')
@@ -41,7 +37,7 @@ export default function Agendar({ showToast }) {
     if (!data) { showToast('Selecione uma data.', 'error'); return }
     if (pets.length === 0) { showToast('Cadastre um pet primeiro.', 'error'); return }
 
-    const pet = pets.find(p => p.id === Number(petId)) || pets[0]
+    const pet = pets.find(p => String(p._id) === String(petId)) || pets[0]
 
     const novoAg = {
       petId:    pet._id,
@@ -101,7 +97,7 @@ export default function Agendar({ showToast }) {
                   <select className="fc" value={petId} onChange={e => setPetId(e.target.value)}>
                     {pets.length === 0
                       ? <option value="">Nenhum pet cadastrado</option>
-                      : pets.map(p => <option key={p.id} value={p._id}>{p.name}{isAdmin ? ` (${p.donoNome})` : ''}</option>)
+                      : pets.map(p => <option key={p._id} value={p._id}>{p.name}{isAdmin ? ` (${p.donoNome})` : ''}</option>)
                     }
                   </select>
                 </label>
