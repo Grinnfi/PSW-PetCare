@@ -54,22 +54,31 @@ cd PWS-PetCare
 npm install
 ```
 
+### 4. Configure as variáveis de ambiente do backend
 
-### 4. Executar o projeto
+```bash
+cd backend
+cp .env.example .env
+```
+
+
+
+### 5. Executar o servidor (backend)
 
 ```bash
 npm run dev
 ```
 
 
-### 4. Executar o servidor
+### 6. Executar o projeto (frontend)
 
 ```bash
+cd frontend
 npm run dev
 ```
 
 
-### 6. Acessar no navegador
+### 7. Acessar no navegador
 
 Após iniciar o servidor, acesse:
 
